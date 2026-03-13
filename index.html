@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Decision Tarot - MVP Demo</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #eee;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      font-size: 2rem;
+      text-align: center;
+      margin-bottom: 10px;
+      color: #ffd700;
+    }
+    
+    .subtitle {
+      text-align: center;
+      opacity: 0.8;
+      margin-bottom: 30px;
+      font-size: 0.9rem;
+    }
+    
+    .card {
+      background: rgba(255,255,255,0.05);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #ffd700;
+    }
+    
+    select, input, textarea {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(0,0,0,0.3);
+      color: #eee;
+      font-size: 1rem;
+    }
+    
+    textarea { resize: vertical; min-height: 80px; }
+    
+    button {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #ffd700, #ffb700);
+      color: #1a1a2e;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    
+    button:hover { transform: scale(1.02); }
+    
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .reading-area { display: none; }
+    
+    .reading-area.active { display: block; }
+    
+    .cards-container {
+      display: flex;
+      justify-content: space-around;
+      margin: 20px 0;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .card-slot {
+      background: rgba(255,255,255,0.03);
+      border-radius: 12px;
+      padding: 15px;
+      width: 150px;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .card-slot .position {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: #ffd700;
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+    }
+    
+    .card-slot .card-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    
+    .card-slot .orientation {
+      font-size: 0.75rem;
+      opacity: 0.7;
+      font-style: italic;
+    }
+    
+    .reading-text {
+      background: rgba(0,0,0,0.2);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+      line-height: 1.6;
+      font-size: 0.95rem;
+      border-left: 3px solid #ffd700;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 40px;
+      opacity: 0.7;
+      display: none;
+    }
+    
+    .loading.active { display: block; }
+    
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(255,255,255,0.1);
+      border-top-color: #ffd700;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px;
+    }
+    
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
+    .error {
+      background: rgba(255,100,100,0.1);
+      border: 1px solid rgba(255,100,100,0.3);
+      color: #ffaaaa;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+      display: none;
+    }
+    
+    .error.active { display: block; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔮 Decision Tarot</h1>
+    <p class="subtitle">Get clarity on your life choices</p>
+    
+    <!-- Question Form -->
+    <div class="card" id="question-form">
+      <label for="decision-type">What decision are you facing?</label>
+      <select id="decision-type">
+        <option value="">Choose a category...</option>
+        <option value="career">Career / Work</option>
+        <option value="relationship">Relationship / Love</option>
+        <option value="lifopo">Life Path / Big Change</option>
+        <option value="money">Money / Finances</option>
+        <option value="health">Health / Wellness</option>
+        <option value="custom">Other / Custom</option>
+      </select>
+      
+      <div id="custom-question" style="display:none; margin-top: 15px;">
+        <label for="custom-text">Your specific question:</label>
+        <textarea id="custom-text" placeholder="e.g., Should I take the new job offer?"></textarea>
+      </div>
+      
+      <label for="name" style="margin-top: 15px;">Your name (optional):</label>
+      <input type="text" id="name" placeholder="So we can make it personal">
+      
+      <button onclick="drawCards()" style="margin-top: 20px;" id="draw-btn">
+        Draw Your Cards
+      </button>
+      
+      <div class="error" id="error-msg"></div>
+    </div>
+    
+    <!-- Loading -->
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p>Shuffling the deck...</p>
+    </div>
+    
+    <!-- Reading Display -->
+    <div class="reading-area" id="reading-area">
+      <div class="card">
+        <h2 style="color: #ffd700; margin-bottom: 10px;">Your 3-Card Spread</h2>
+        <p id="reading-header" style="opacity: 0.8; margin-bottom: 15px;"></p>
+        
+        <div class="cards-container">
+          <div class="card-slot">
+            <div class="position">The Situation</div>
+            <div class="card-name" id="card1-name"></div>
+            <div class="orientation" id="card1-orientation"></div>
+          </div>
+          
+          <div class="card-slot">
+            <div class="position">The Choice</div>
+            <div class="card-name" id="card2-name"></div>
+            <div class="orientation" id="card2-orientation"></div>
+          </div>
+          
+          <div class="card-slot">
+            <div class="position">The Outcome</div>
+            <div class="card-name" id="card3-name"></div>
+            <div class="orientation" id="card3-orientation"></div>
+          </div>
+        </div>
+        
+        <div class="reading-text" id="ai-reading">
+          <p style="opacity: 0.7; font-style: italic;">AI interpretation loading...</p>
+        </div>
+        
+        <button onclick="resetReading()" style="margin-top: 20px; background: rgba(255,255,255,0.1);">
+          Start New Reading
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    const API_BASE = 'https://tarotapi.dev/api/v1';
+    
+    // Show custom question field if "custom" selected
+    document.getElementById('decision-type').addEventListener('change', (e) => {
+      document.getElementById('custom-question').style.display = 
+        e.target.value === 'custom' ? 'block' : 'none';
+    });
+    
+    async function drawCards() {
+      const decisionType = document.getElementById('decision-type').value;
+      const customText = document.getElementById('custom-text').value;
+      const name = document.getElementById('name').value;
+      const errorEl = document.getElementById('error-msg');
+      const loadingEl = document.getElementById('loading');
+      const questionForm = document.getElementById('question-form');
+      
+      if (!decisionType) {
+        errorEl.textContent = 'Please select a decision category';
+        errorEl.classList.add('active');
+        return;
+      }
+      
+      if (decisionType === 'custom' && !customText.trim()) {
+        errorEl.textContent = 'Please enter your question';
+        errorEl.classList.add('active');
+        return;
+      }
+      
+      errorEl.classList.remove('active');
+      questionForm.style.display = 'none';
+      loadingEl.classList.add('active');
+      
+      try {
+        // Draw 3 cards from API
+        const response = await fetch(`${API_BASE}/cards/random?n=3`);
+        const data = await response.json();
+        
+        if (!data || data.length < 3) {
+          throw new Error('Failed to draw cards');
+        }
+        
+        const cards = data.slice(0, 3);
+        
+        // Build question context
+        const question = decisionType === 'custom' 
+          ? customText 
+          : `Should I move forward with this ${decisionType} decision?`;
+        
+        // Determine upright/reversed (API randomizes, but let's check)
+        const cardsWithOrientation = cards.map(card => ({
+          ...card,
+          orientation: Math.random() > 0.8 ? 'reversed' : 'upright'
+        }));
+        
+        // Call AI for interpretation
+        const reading = await getAIReading(cardsWithOrientation, question, name || ' seeker');
+        
+        // Display results
+        displayReading(cardsWithOrientation, question, name, reading);
+        
+      } catch (err) {
+        errorEl.textContent = `Error: ${err.message}`;
+        errorEl.classList.add('active');
+        questionForm.style.display = 'block';
+      } finally {
+        loadingEl.classList.remove('active');
+      }
+    }
+    
+    async function getAIReading(cards, question, name) {
+      // Try Ollama first, fall back to mock if unavailable
+      try {
+        const prompt = buildPrompt(cards, question, name);
+        
+        const response = await fetch('http://localhost:11434/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'qwen3.5:397b-cloud',
+            prompt: prompt,
+            stream: false
+          })
+        });
+        
+        if (!response.ok) throw new Error('AI unavailable');
+        const data = await response.json();
+        return data.response;
+        
+      } catch (err) {
+        // Fallback mock reading
+        return buildMockReading(cards, question, name);
+      }
+    }
+    
+    function buildPrompt(cards, question, name) {
+      const cardDetails = cards.map((c, i) => {
+        const positions = ['The Situation (where you are now)', 'The Choice (what this decision asks)', 'The Outcome (where this path leads)'];
+        return `${positions[i]}: ${c.name_short} (${c.orientation})\n  Meaning: ${c.orientation === 'reversed' ? c.meaning_rev : c.meaning}`;
+      }).join('\n\n');
+      
+      return `You are a tarot reader giving personalized guidance. The person is named ${name}.
+      
+Their question: "${question}"
+
+Cards drawn:
+${cardDetails}
+
+Give a 2-3 paragraph reading that:
+1. Speaks directly to their situation (use their name)
+2. Explains how each card relates to THEIR specific question
+3. Uses clear, direct language (not fluffy mysticism)
+4. Ends with actionable insight
+
+Read their cards naturally, like a conversation.`;
+    }
+    
+    function buildMockReading(cards, question, name) {
+      const cardNames = cards.map(c => c.name_short).join(', ');
+      return `Hi${name}, the cards pulled for "${question}" are: ${cardNames}.
+      
+      Card 1 (The Situation) shows where you stand now. Card 2 (The Choice) reveals what's being asked of you. Card 3 (The Outcome) points to where this path leads.
+      
+      This is a demo - connect AI for full readings!`;
+    }
+    
+    function displayReading(cards, question, name, reading) {
+      const intro = name 
+        ? `${name}'s reading about: "${question}"`
+        : `Reading about: "${question}"`;
+      
+      document.getElementById('reading-header').textContent = intro;
+      
+      cards.forEach((card, i) => {
+        document.getElementById(`card${i+1}-name`).textContent = card.name_short.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        document.getElementById(`card${i+1}-orientation`).textContent = card.orientation === 'reversed' ? 'Reversed' : 'Upright';
+      });
+      
+      document.getElementById('ai-reading').innerHTML = `<p>${reading.replace(/\n/g, '<br/>')}</p>`;
+      
+      document.getElementById('reading-area').classList.add('active');
+    }
+    
+    function resetReading() {
+      document.getElementById('reading-area').classList.remove('active');
+      document.getElementById('question-form').style.display = 'block';
+      document.getElementById('decision-type').value = '';
+      document.getElementById('custom-text').value = '';
+      document.getElementById('name').value = '';
+    }
+  </script>
+</body>
+</html>
