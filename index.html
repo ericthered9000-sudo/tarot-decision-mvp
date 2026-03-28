@@ -98,7 +98,7 @@
       background: rgba(255,255,255,0.03);
       border-radius: 12px;
       padding: 15px;
-      width: 150px;
+      width: 140px;
       text-align: center;
       border: 1px solid rgba(255,255,255,0.1);
     }
@@ -111,14 +111,25 @@
       letter-spacing: 1px;
     }
     
+    .card-slot .card-image {
+      width: 100px;
+      height: 175px;
+      object-fit: contain;
+      margin: 10px auto;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      background: rgba(0,0,0,0.2);
+    }
+    
     .card-slot .card-name {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       font-weight: 600;
+      margin-top: 8px;
       margin-bottom: 4px;
     }
     
     .card-slot .orientation {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       opacity: 0.7;
       font-style: italic;
     }
@@ -179,7 +190,7 @@
         <option value="">Choose a category...</option>
         <option value="career">Career / Work</option>
         <option value="relationship">Relationship / Love</option>
-        <option value="lifopo">Life Path / Big Change</option>
+        <option value="lifepath">Life Path / Big Change</option>
         <option value="money">Money / Finances</option>
         <option value="health">Health / Wellness</option>
         <option value="custom">Other / Custom</option>
@@ -215,18 +226,21 @@
         <div class="cards-container">
           <div class="card-slot">
             <div class="position">The Situation</div>
+            <img class="card-image" id="card1-image" src="" alt="">
             <div class="card-name" id="card1-name"></div>
             <div class="orientation" id="card1-orientation"></div>
           </div>
           
           <div class="card-slot">
             <div class="position">The Choice</div>
+            <img class="card-image" id="card2-image" src="" alt="">
             <div class="card-name" id="card2-name"></div>
             <div class="orientation" id="card2-orientation"></div>
           </div>
           
           <div class="card-slot">
             <div class="position">The Outcome</div>
+            <img class="card-image" id="card3-image" src="" alt="">
             <div class="card-name" id="card3-name"></div>
             <div class="orientation" id="card3-orientation"></div>
           </div>
@@ -245,6 +259,67 @@
   
   <script>
     const API_BASE = 'https://tarotapi.dev/api/v1';
+    
+    // Map API card names to image filenames
+    function getImageFilename(card) {
+      const nameShort = card.name_short;
+      
+      // Major Arcana: ar00-fool, ar01-magician, etc.
+      if (card.type === 'major') {
+        const majorNames = {
+          'ar00': 'fool',
+          'ar01': 'magician',
+          'ar02': 'priestess',
+          'ar03': 'empress',
+          'ar04': 'emperor',
+          'ar05': 'hierophant',
+          'ar06': 'lovers',
+          'ar07': 'chariot',
+          'ar08': 'strength',
+          'ar09': 'hermit',
+          'ar10': 'fortune',
+          'ar11': 'justice',
+          'ar12': 'hanged',
+          'ar13': 'death',
+          'ar14': 'temperance',
+          'ar15': 'devil',
+          'ar16': 'tower',
+          'ar17': 'star',
+          'ar18': 'moon',
+          'ar19': 'sun',
+          'ar20': 'judgement',
+          'ar21': 'world'
+        };
+        const name = majorNames[nameShort];
+        return name ? `major_arcana_${name}.png` : null;
+      }
+      
+      // Minor Arcana: cups_ace, swords_king, wands_10, etc.
+      if (card.type === 'minor') {
+        const suitMap = {
+          'cups': 'cups',
+          'swords': 'swords',
+          'wands': 'wands',
+          'pentacles': 'pentacles'
+        };
+        
+        const valueMap = {
+          'ace': 'ace',
+          '2': '2', '3': '3', '4': '4', '5': '5',
+          '6': '6', '7': '7', '8': '8', '9': '9', '10': '10',
+          'page': 'page', 'knight': 'knight', 'queen': 'queen', 'king': 'king'
+        };
+        
+        const suit = suitMap[card.suit];
+        const value = valueMap[card.value];
+        
+        if (suit && value) {
+          return `minor_arcana_${suit}_${value}.png`;
+        }
+      }
+      
+      return null;
+    }
     
     // Show custom question field if "custom" selected
     document.getElementById('decision-type').addEventListener('change', (e) => {
@@ -281,25 +356,25 @@
         const response = await fetch(`${API_BASE}/cards/random?n=3`);
         const data = await response.json();
         
-        if (!data || data.length < 3) {
+        if (!data || !data.cards || data.cards.length < 3) {
           throw new Error('Failed to draw cards');
         }
         
-        const cards = data.slice(0, 3);
+        const cards = data.cards.slice(0, 3);
         
         // Build question context
         const question = decisionType === 'custom' 
           ? customText 
           : `Should I move forward with this ${decisionType} decision?`;
         
-        // Determine upright/reversed (API randomizes, but let's check)
+        // Determine upright/reversed (API doesn't provide, so we randomize)
         const cardsWithOrientation = cards.map(card => ({
           ...card,
           orientation: Math.random() > 0.8 ? 'reversed' : 'upright'
         }));
         
-        // Call AI for interpretation
-        const reading = await getAIReading(cardsWithOrientation, question, name || ' seeker');
+        // Generate reading from card meanings
+        const reading = getReading(cardsWithOrientation, question, name || ' seeker');
         
         // Display results
         displayReading(cardsWithOrientation, question, name, reading);
@@ -313,60 +388,24 @@
       }
     }
     
-    async function getAIReading(cards, question, name) {
-      // Try Ollama first, fall back to mock if unavailable
-      try {
-        const prompt = buildPrompt(cards, question, name);
+    function getReading(cards, question, name) {
+      // Generate reading from card meanings (no AI needed for MVP test)
+      const positions = ['The Situation', 'The Choice', 'The Outcome'];
+      
+      let reading = `<strong>Hi${name || ' seeker'},</strong> here's your reading on: "<em>${question}</em>"<br/><br/>`;
+      
+      cards.forEach((card, i) => {
+        const meaning = card.orientation === 'reversed' ? card.meaning_rev : card.meaning_up;
+        const actualName = card.name || card.name_short.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
         
-        const response = await fetch('http://localhost:11434/api/generate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            model: 'qwen3.5:397b-cloud',
-            prompt: prompt,
-            stream: false
-          })
-        });
-        
-        if (!response.ok) throw new Error('AI unavailable');
-        const data = await response.json();
-        return data.response;
-        
-      } catch (err) {
-        // Fallback mock reading
-        return buildMockReading(cards, question, name);
-      }
-    }
-    
-    function buildPrompt(cards, question, name) {
-      const cardDetails = cards.map((c, i) => {
-        const positions = ['The Situation (where you are now)', 'The Choice (what this decision asks)', 'The Outcome (where this path leads)'];
-        return `${positions[i]}: ${c.name_short} (${c.orientation})\n  Meaning: ${c.orientation === 'reversed' ? c.meaning_rev : c.meaning}`;
-      }).join('\n\n');
+        reading += `<strong>${positions[i]}:</strong> ${actualName}`;
+        if (card.orientation === 'reversed') reading += ' (Reversed)';
+        reading += `<br/>${meaning}<br/><br/>`;
+      });
       
-      return `You are a tarot reader giving personalized guidance. The person is named ${name}.
+      reading += `<strong>Summary:</strong> These cards suggest reflecting on where you stand (Situation), what's being asked of you (Choice), and where this path may lead (Outcome). Trust your intuition as you move forward.`;
       
-Their question: "${question}"
-
-Cards drawn:
-${cardDetails}
-
-Give a 2-3 paragraph reading that:
-1. Speaks directly to their situation (use their name)
-2. Explains how each card relates to THEIR specific question
-3. Uses clear, direct language (not fluffy mysticism)
-4. Ends with actionable insight
-
-Read their cards naturally, like a conversation.`;
-    }
-    
-    function buildMockReading(cards, question, name) {
-      const cardNames = cards.map(c => c.name_short).join(', ');
-      return `Hi${name}, the cards pulled for "${question}" are: ${cardNames}.
-      
-      Card 1 (The Situation) shows where you stand now. Card 2 (The Choice) reveals what's being asked of you. Card 3 (The Outcome) points to where this path leads.
-      
-      This is a demo - connect AI for full readings!`;
+      return reading;
     }
     
     function displayReading(cards, question, name, reading) {
@@ -377,8 +416,23 @@ Read their cards naturally, like a conversation.`;
       document.getElementById('reading-header').textContent = intro;
       
       cards.forEach((card, i) => {
-        document.getElementById(`card${i+1}-name`).textContent = card.name_short.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-        document.getElementById(`card${i+1}-orientation`).textContent = card.orientation === 'reversed' ? 'Reversed' : 'Upright';
+        const cardNum = i + 1;
+        const displayName = card.name || card.name_short.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        
+        // Set card image
+        const imageFilename = getImageFilename(card);
+        const imageEl = document.getElementById(`card${cardNum}-image`);
+        if (imageFilename) {
+          imageEl.src = `public/cards/${imageFilename}`;
+          imageEl.alt = displayName;
+          imageEl.style.display = 'block';
+        } else {
+          imageEl.style.display = 'none';
+        }
+        
+        // Set card name and orientation
+        document.getElementById(`card${cardNum}-name`).textContent = displayName;
+        document.getElementById(`card${cardNum}-orientation`).textContent = card.orientation === 'reversed' ? 'Reversed' : 'Upright';
       });
       
       document.getElementById('ai-reading').innerHTML = `<p>${reading.replace(/\n/g, '<br/>')}</p>`;
