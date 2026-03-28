@@ -1,0 +1,11 @@
+# Ignore heavy build artifacts
+android/
+node_modules/
+*.apk
+*.aab
+*.log
+
+# Keep only what Vercel needs
+!public/
+!index.html
+!package.json
