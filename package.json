@@ -1,0 +1,29 @@
+{
+  "name": "tarot-decision-demo",
+  "version": "1.0.0",
+  "description": "Tarot decision-making app - one-time $6.99 purchase",
+  "main": "index.js",
+  "scripts": {
+    "cap:sync": "npx cap sync android",
+    "android:open": "npx cap open android",
+    "android:build": "cd android && ./gradlew assembleDebug",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ericthered9000-sudo/tarot-decision-mvp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ericthered9000-sudo/tarot-decision-mvp/issues"
+  },
+  "homepage": "https://github.com/ericthered9000-sudo/tarot-decision-mvp#readme",
+  "dependencies": {
+    "@capacitor/android": "^5.7.8",
+    "@capacitor/cli": "^5.7.8",
+    "@capacitor/core": "^5.7.8"
+  }
+}

@@ -10,16 +10,18 @@
 - [x] Download public domain Rider-Waite-Smith images (78 cards)
 - [x] Host images (Vercel static assets or CDN)
 - [x] Wire up images to card display in UI
-- [ ] Add card back image for face-down state
+- [x] Add card back image for face-down state
+- [x] Add card flip animation (staggered reveal)
 - [ ] Test on mobile (responsive sizing)
 
-### 2. Mobile App Build
-- [ ] Initialize Capacitor project
-- [ ] Configure Android (target SDK 35, package name)
+### 2. Mobile App Build ✅ COMPLETE (2026-03-28)
+- [x] Initialize Capacitor project
+- [x] Configure Android (package: com.keystonedigital.tarot)
+- [x] Update target SDK to 35 (Play Store requirement)
+- [x] Sync web assets to native project
+- [x] Build APK for testing
 - [ ] Configure iOS (if doing iOS later)
-- [ ] Sync web assets to native project
-- [ ] Build APK for testing
-- [ ] Build AAB for Play Store
+- [ ] Build AAB for Play Store (release build)
 
 ### 3. Payment Integration
 - [ ] Set up RevenueCat (or Stripe)
