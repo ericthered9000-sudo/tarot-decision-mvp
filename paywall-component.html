@@ -1,0 +1,235 @@
+<!-- Paywall Modal - Drop into index.html before closing </body> tag -->
+
+<div id="paywall-modal" class="paywall-modal" style="display: none;">
+  <div class="paywall-content">
+    <div class="paywall-header">
+      <h2 style="color: #ffd700; margin: 0;">Unlock Unlimited Readings</h2>
+      <button onclick="closePaywall()" style="background: none; border: none; color: #888; font-size: 24px; cursor: pointer;">&times;</button>
+    </div>
+    
+    <div class="paywall-pricing">
+      <div class="price-tag">
+        <span class="price">$6.99</span>
+        <span class="period">one-time</span>
+      </div>
+      <p style="opacity: 0.8; margin-top: 10px;">Lifetime access - no subscriptions</p>
+    </div>
+    
+    <div class="paywall-features">
+      <h3 style="color: #ffd700; font-size: 1rem; margin-bottom: 10px;">What you get:</h3>
+      <ul style="list-style: none; padding: 0; line-height: 2;">
+        <li>✅ Unlimited daily readings</li>
+        <li>✅ All spread types (3-card, Celtic Cross, Relationship)</li>
+        <li>✅ Save your reading history</li>
+        <li>✅ Detailed card interpretations</li>
+        <li>✅ Reversed card meanings</li>
+      </ul>
+    </div>
+    
+    <button id="purchase-btn" onclick="handlePurchase()" class="purchase-button">
+      Get Lifetime Access - $6.99
+    </button>
+    
+    <p style="font-size: 0.75rem; opacity: 0.6; text-align: center; margin-top: 15px;">
+      Secure payment via Stripe • No subscription • Cancel anytime
+    </p>
+  </div>
+</div>
+
+<style>
+  .paywall-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
+  }
+  
+  .paywall-content {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 16px;
+    padding: 30px;
+    max-width: 400px;
+    width: 100%;
+    border: 1px solid rgba(255,215,0,0.2);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  }
+  
+  .paywall-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .paywall-pricing {
+    text-align: center;
+    padding: 20px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  
+  .price-tag {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 8px;
+  }
+  
+  .price {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #ffd700;
+  }
+  
+  .period {
+    font-size: 1rem;
+    opacity: 0.7;
+  }
+  
+  .paywall-features {
+    padding: 20px 0;
+  }
+  
+  .paywall-features ul li {
+    padding: 5px 0;
+    font-size: 0.95rem;
+  }
+  
+  .purchase-button {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%);
+    color: #1a1a2e;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s;
+    margin-top: 10px;
+  }
+  
+  .purchase-button:hover {
+    transform: scale(1.02);
+  }
+  
+  .purchase-button:active {
+    transform: scale(0.98);
+  }
+</style>
+
+<script>
+  // Paywall state
+  let dailyReadingsCount = 0;
+  const FREE_DAILY_LIMIT = 1;
+  let isPurchased = false;
+  
+  // Check if paywall should show
+  function shouldShowPaywall() {
+    if (isPurchased) return false;
+    return dailyReadingsCount >= FREE_DAILY_LIMIT;
+  }
+  
+  // Show paywall
+  function showPaywall() {
+    document.getElementById('paywall-modal').style.display = 'flex';
+  }
+  
+  // Close paywall
+  function closePaywall() {
+    document.getElementById('paywall-modal').style.display = 'none';
+  }
+  
+  // Handle purchase button click
+  async function handlePurchase() {
+    const btn = document.getElementById('purchase-btn');
+    btn.textContent = 'Processing...';
+    btn.disabled = true;
+    
+    try {
+      // Load RevenueCat if not already loaded
+      if (typeof window.Purchases === 'undefined') {
+        await loadRevenueCat();
+      }
+      
+      // Attempt purchase
+      const success = await purchaseLifetimeAccess();
+      
+      if (success) {
+        isPurchased = true;
+        dailyReadingsCount = 0;
+        closePaywall();
+        alert('🎉 Thank you! Lifetime access unlocked.');
+      } else {
+        btn.textContent = 'Get Lifetime Access - $6.99';
+        btn.disabled = false;
+      }
+    } catch (err) {
+      console.error('Purchase error:', err);
+      btn.textContent = 'Get Lifetime Access - $6.99';
+      btn.disabled = false;
+      alert('Purchase failed. Please try again.');
+    }
+  }
+  
+  // Load RevenueCat SDK dynamically
+  async function loadRevenueCat() {
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = 'https://js.revenuecat.com/v1/latest/purchases.min.js';
+      script.onload = async () => {
+        try {
+          await initRevenueCat();
+          resolve();
+        } catch (err) {
+          reject(err);
+        }
+      };
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  }
+  
+  // Increment daily reading count
+  function incrementReadingCount() {
+    const today = new Date().toDateString();
+    const lastCountDate = localStorage.getItem('readingCountDate');
+    
+    if (lastCountDate !== today) {
+      // New day, reset counter
+      localStorage.setItem('readingCountDate', today);
+      localStorage.setItem('readingCount', '0');
+      dailyReadingsCount = 0;
+    } else {
+      dailyReadingsCount = parseInt(localStorage.getItem('readingCount') || '0');
+    }
+    
+    dailyReadingsCount++;
+    localStorage.setItem('readingCount', dailyReadingsCount.toString());
+    
+    // Check if limit reached
+    if (shouldShowPaywall()) {
+      setTimeout(showPaywall, 500); // Show after reading completes
+    }
+  }
+  
+  // Load purchase status on init
+  async function loadPurchaseStatus() {
+    try {
+      if (typeof window.Purchases !== 'undefined') {
+        isPurchased = await hasPurchased();
+      }
+    } catch (err) {
+      console.error('Error loading purchase status:', err);
+    }
+  }
+  
+  // Auto-load on page init
+  loadPurchaseStatus();
+</script>

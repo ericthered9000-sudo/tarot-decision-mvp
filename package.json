@@ -24,6 +24,7 @@
   "dependencies": {
     "@capacitor/android": "^5.7.8",
     "@capacitor/cli": "^5.7.8",
-    "@capacitor/core": "^5.7.8"
+    "@capacitor/core": "^5.7.8",
+    "@revenuecat/purchases-js": "^1.29.1"
   }
 }
