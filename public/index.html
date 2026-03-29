@@ -452,10 +452,24 @@
         // Reveal card with staggered animation
         setTimeout(() => {
           const imageFilename = getImageFilename(card);
+          console.log(`Card ${cardNum}:`, card.name, '→', imageFilename); // Debug log
           if (imageFilename) {
-            imageEl.src = `cards/${imageFilename}`;
-            imageEl.alt = displayName;
-            imageEl.classList.add('revealed');
+            // Preload image before revealing
+            const preloadImg = new Image();
+            preloadImg.onload = () => {
+              imageEl.src = `cards/${imageFilename}`;
+              imageEl.alt = displayName;
+              imageEl.classList.add('revealed');
+              console.log(`Card ${cardNum} loaded:`, imageFilename);
+            };
+            preloadImg.onerror = () => {
+              console.error(`Card ${cardNum} failed to load:`, imageFilename);
+              // Fallback: show card name even if image fails
+              imageEl.classList.add('revealed');
+            };
+            preloadImg.src = `cards/${imageFilename}`;
+          } else {
+            console.error('No image filename for card:', card);
           }
         }, 800 * cardNum); // Stagger reveals (0.8s, 1.6s, 2.4s)
         
