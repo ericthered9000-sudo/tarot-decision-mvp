@@ -417,27 +417,72 @@
     }
     
     function getReading(cards, question, name) {
-      // Simple reading format for testing
+      // Position-specific guidance
+      const positions = [
+        { name: 'The Situation', guide: 'Where you are right now' },
+        { name: 'The Choice', guide: 'The decision before you' },
+        { name: 'The Outcome', guide: 'Where this path leads' }
+      ];
+      
+      // Build reading
       let reading = `<div style="margin-bottom: 20px;">`;
-      reading += `<strong>${name ? name + ', ' : 'Seeker, '}</strong>you asked about "${question}"`;
+      reading += `<strong>${name ? name + ', ' : 'Seeker, '}</strong>your reading on: <em>"${question}"</em>`;
       reading += `</div>`;
       
-      const positions = ['The Situation', 'The Choice', 'The Outcome'];
-      
+      // Card interpretations
       cards.forEach((card, i) => {
+        const pos = positions[i];
         const cardName = card.name || card.name_short.replace(/_/g, ' ');
-        const meaning = card.orientation === 'reversed' ? card.meaning_rev : card.meaning_up;
+        const isReversed = card.orientation === 'reversed';
+        const meaning = isReversed ? card.meaning_rev : card.meaning_up;
         
-        reading += `<div style="margin: 15px 0; padding: 10px; background: rgba(255,215,0,0.1); border-radius: 8px;">`;
-        reading += `<div style="color: #ffd700; margin-bottom: 5px;"><strong>${positions[i]}:</strong> ${cardName}`;
-        if (card.orientation === 'reversed') reading += ` (Reversed)`;
+        reading += `<div style="margin: 15px 0; padding: 12px; background: rgba(255,215,0,0.1); border-radius: 8px; border-left: 3px solid #ffd700;">`;
+        reading += `<div style="color: #ffd700; font-size: 1.1em; margin-bottom: 4px;"><strong>${pos.name}:</strong> ${cardName}`;
+        if (isReversed) reading += ` (Reversed)`;
         reading += `</div>`;
+        reading += `<div style="font-size: 0.85em; opacity: 0.7; margin-bottom: 8px;">${pos.guide}</div>`;
         reading += `<div>${meaning}</div>`;
+        
+        // Position-specific interpretation
+        if (isReversed) {
+          if (i === 0) {
+            reading += `<div style="margin-top: 8px; font-style: italic; opacity: 0.9;">There may be blocked energy or resistance in your current situation.</div>`;
+          } else if (i === 1) {
+            reading += `<div style="margin-top: 8px; font-style: italic; opacity: 0.9;">Consider what needs to be released before moving forward.</div>`;
+          } else {
+            reading += `<div style="margin-top: 8px; font-style: italic; opacity: 0.9;">The outcome is not fixed - reconsider your approach.</div>`;
+          }
+        }
+        
         reading += `</div>`;
       });
       
-      reading += `<div style="margin-top: 15px; padding: 10px; background: rgba(74,60,140,0.3); border-radius: 10px;">`;
-      reading += `<strong>Your Reading Summary:</strong> These cards suggest reflecting on your situation (Situation), considering your options (Choice), and looking ahead (Outcome).`;
+      // Synthesis based on card types and orientations
+      const reversedCount = cards.filter(c => c.orientation === 'reversed').length;
+      const majorCount = cards.filter(c => c.type === 'major').length;
+      
+      reading += `<div style="margin-top: 20px; padding: 15px; background: linear-gradient(135deg, rgba(74,60,140,0.3), rgba(255,215,0,0.1)); border-radius: 10px;">`;
+      reading += `<div style="color: #ffd700; font-size: 1.1em; margin-bottom: 10px;">Your Reading Summary</div>`;
+      
+      // Energy assessment
+      if (reversedCount === 0) {
+        reading += `<p><strong>Energy flows smoothly.</strong> All upright cards suggest clarity and forward momentum.</p>`;
+      } else if (reversedCount === 1) {
+        reading += `<p><strong>A pause point.</strong> One reversed card suggests something to reconsider.</p>`;
+      } else if (reversedCount === 2) {
+        reading += `<p><strong>Internal tension.</strong> Two reversed cards indicate conflicting energies to resolve.</p>`;
+      } else {
+        reading += `<p><strong>Time for reflection.</strong> All reversed cards invite you to pause before acting.</p>`;
+      }
+      
+      // Major arcana insight
+      if (majorCount >= 2) {
+        reading += `<p><strong>Significant moment.</strong> Major Arcana cards speak of life themes and soul lessons.</p>`;
+      } else {
+        reading += `<p><strong>Practical guidance.</strong> Minor Arcana guide day-to-day choices and actions.</p>`;
+      }
+      
+      reading += `<p style="margin-top: 10px;"><strong>Remember:</strong> Tarot illuminates your present - it does not predict your future. Trust your intuition.</p>`;
       reading += `</div>`;
       
       return reading;
