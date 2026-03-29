@@ -588,7 +588,7 @@
         document.getElementById(`card${cardNum}-orientation`).textContent = card.orientation === 'reversed' ? 'Reversed' : 'Upright';
       });
       
-      document.getElementById('ai-reading').innerHTML = `<p>${reading.replace(/\n/g, '<br/>')}</p>`;
+      document.getElementById('ai-reading').innerHTML = reading;
       
       document.getElementById('reading-area').classList.add('active');
     }
