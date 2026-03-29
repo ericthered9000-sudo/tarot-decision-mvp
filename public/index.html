@@ -444,7 +444,7 @@
         const imageEl = document.getElementById(`card${cardNum}-image`);
         
         // Show card back initially for drama
-        imageEl.src = `public/cards/card_back.jpg`;
+        imageEl.src = `cards/card_back.jpg`;
         imageEl.alt = 'Card back';
         imageEl.style.display = 'block';
         imageEl.classList.remove('revealed');
@@ -453,7 +453,7 @@
         setTimeout(() => {
           const imageFilename = getImageFilename(card);
           if (imageFilename) {
-            imageEl.src = `public/cards/${imageFilename}`;
+            imageEl.src = `cards/${imageFilename}`;
             imageEl.alt = displayName;
             imageEl.classList.add('revealed');
           }
