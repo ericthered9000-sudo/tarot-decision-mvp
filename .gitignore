@@ -1,1 +1,49 @@
-.vercel
+# Dependencies
+node_modules/
+
+# Build output
+android/app/build/
+android/.gradle/
+android/captures/
+builds/
+*.apk
+*.aab
+
+# IDE
+.idea/
+.expo/
+*.iml
+
+# Generated
+classes*.dex
+kotlin/
+META-INF/
+res/
+resources.arsc
+DebugProbesKt.bin
+AndroidManifest.xml
+org/
+r
+
+# Local configs
+*.local.properties
+android/google-services.json
+android/google-services.json.service_account
+android/tarot-release-key.keystore
+fastlane/play-store-api.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backups
+*.backup
+*.backup-*
+
+# Capacitor generated
+assets/
+capacitor.config.json
+app.json
+
+# Vercel
+.vercel/

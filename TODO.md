@@ -1,6 +1,6 @@
 # Tarot Decision App - TODO List
 
-**Goal:** Ship to Google Play Store as one-time $6.99 purchase
+**Goal:** Ship to Google Play Store as one-time $19.99 purchase
 
 ---
 
@@ -25,7 +25,7 @@
 
 ### 3. Payment Integration
 - [ ] Set up RevenueCat (or Stripe)
-- [ ] Create $6.99 one-time purchase product
+- [ ] Create $9.99 one-time purchase product
 - [ ] Add paywall UI (unlock full readings)
 - [ ] Implement purchase flow
 - [ ] Test on Android (license testing)
@@ -37,28 +37,36 @@
 - [ ] Include reversals (optional, but adds depth)
 - [ ] Test readings feel personal, not generic
 
+### 5. New Spreads (Mom's Feedback) 🎴
+- [ ] 1-Card Spread (single card daily guidance)
+- [ ] 7-Card Celtic Cross (advanced deep dive)
+- [ ] Spread selector UI (choose 1/3/7 before drawing)
+- [ ] Position meanings for Celtic Cross (7 positions)
+- [ ] Update Play Store listing with new spreads
+
 ---
 
 ## 🚀 P1 - Should Have (Better UX)
 
-### 5. UI Polish
-- [ ] Add card flip animation
-- [ ] Smooth transitions between screens
-- [ ] Loading states while drawing cards
-- [ ] Better typography and spacing
-- [ ] Dark mode (already have dark theme, verify)
+### 5. UI Polish ✅ COMPLETE (2026-03-31)
+- [x] Add card flip animation
+- [x] Smooth transitions between screens
+- [x] Loading states while drawing cards
+- [x] Better typography and spacing
+- [x] Dark mode (already dark)
+- [x] "Tap card for definition" hint text
 
-### 6. App Structure
+### 6. App Structure ✅ COMPLETE (2026-03-31)
+- [x] Add saved readings history
+- [x] Add share reading feature (native share or clipboard)
 - [ ] Add onboarding screen (what is this app?)
 - [ ] Add settings screen (toggle reversals, sound, etc.)
-- [ ] Add saved readings history
-- [ ] Add share reading feature (image/text)
 
-### 7. Sound & Haptics
+### 7. Sound & Haptics ✅ PLACEHOLDER (2026-03-31)
+- [x] Sound effect hooks added (need actual .mp3 files)
 - [ ] Add card shuffle sound
 - [ ] Add card flip sound
 - [ ] Haptic feedback on draw
-- [ ] Background ambience (optional)
 
 ---
 
@@ -98,7 +106,7 @@
 ### Play Store Submission
 - [ ] Create app listing
 - [ ] Upload AAB
-- [ ] Set pricing ($6.99 one-time)
+- [ ] Set pricing ($9.99 one-time)
 - [ ] Submit for review (2-7 days)
 - [ ] Monitor review status
 
@@ -125,7 +133,7 @@
 ## 📝 Notes
 
 - **Differentiator:** Decision-focused, not generic daily readings
-- **Pricing:** $6.99 one-time (undercut subscription apps)
+- **Pricing:** $9.99 one-time (undercut subscription apps)
 - **Target:** People at crossroads (career, relationships, life decisions)
 - **Marketing:** TikTok/Instagram reels showing readings (viral potential)
 
