@@ -1,0 +1,26 @@
+default_platform(:android)
+
+platform :android do
+  desc "Build release AAB"
+  lane :build do
+    gradle(task: "bundleRelease", project_dir: "android")
+  end
+
+  desc "Upload to Play Store closed testing"
+  lane :upload do
+    upload_to_play_store(
+      track: "alpha",
+      aab: "android/app/build/outputs/bundle/release/app-release.aab",
+      skip_upload_metadata: false,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      skip_upload_apk: true
+    )
+  end
+
+  desc "Build and upload in one command"
+  lane :deploy do
+    build
+    upload
+  end
+end
