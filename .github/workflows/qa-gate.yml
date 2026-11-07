@@ -22,3 +22,18 @@ jobs:
           fi
       - name: qa gate fast (tsc, lint)
         run: bash scripts/qa-gate.sh .
+      - name: self-report marker (run result to ci-status branch — no Actions read token needed)
+        if: always()
+        shell: bash
+        env:
+          CI_RESULT: ${{ job.status }}
+        run: |
+          git config user.email 206584+ericthered9000-sudo@users.noreply.github.com
+          git config user.name ci-reporter
+          git fetch -q origin master 2>/dev/null || true
+          git checkout -q -B ci-status "origin/ci-status" 2>/dev/null || git checkout -q -B ci-status
+          printf 'run=%s\njob=%s\nsha=%s\nrepo=%s\nupdated=%s\n' "$GITHUB_RUN_ID" "$CI_RESULT" "$GITHUB_SHA" "$GITHUB_REPOSITORY" "$(date -u +%FT%TZ)" >> .ci-status.txt
+          git add -f .ci-status.txt
+          git commit -qm "ci marker: run $GITHUB_RUN_ID $CI_RESULT" || true
+          git push -q -f origin ci-status
+
