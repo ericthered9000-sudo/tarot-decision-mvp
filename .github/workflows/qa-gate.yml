@@ -1,0 +1,24 @@
+name: keystone-qa-gate
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: install deps (if lockfile present)
+        shell: bash
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci --no-audit --no-fund
+          else
+            echo "no lockfile - npm ci skipped, gate runs in skip-deps mode"
+          fi
+      - name: qa gate (fast: tsc + lint)
+        run: bash scripts/qa-gate.sh .
