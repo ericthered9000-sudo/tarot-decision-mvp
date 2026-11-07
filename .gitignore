@@ -35,3 +35,7 @@ fastlane/report.xml
 fastlane/play-store-api.json
 *service-account*.json
 play-store-api.json
+
+# stray Play service-account key copies (Girz 2026-11: caught by GitHub push protection)
+android/fastlane/google-play-key.json
+android/app/google-services.json.service_account
