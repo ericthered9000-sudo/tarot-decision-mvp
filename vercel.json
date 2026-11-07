@@ -1,6 +1,7 @@
 {
-  "version": 2,
-  "public": true,
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": null,
+  "outputDirectory": "public",
   "cleanUrls": true,
   "trailingSlash": false,
   "functions": {
@@ -8,8 +9,5 @@
       "memory": 512,
       "maxDuration": 15
     }
-  },
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/$1" }
-  ]
+  }
 }

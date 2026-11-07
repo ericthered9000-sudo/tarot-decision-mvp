@@ -5,5 +5,12 @@ node_modules/
 *.aab
 *.log
 
+# Never ship editor/version backups of the web root to production.
+# .gitignore already hides these (*.backup, *.backup-*), but the Vercel CLI
+# uploads local files regardless of git tracking, so they need an explicit
+# ignore here too or they are publicly served at /index.html.backup.
+*.backup
+*.backup-*
+
 # Don't ignore public folder - we need it for Vercel
 # public/

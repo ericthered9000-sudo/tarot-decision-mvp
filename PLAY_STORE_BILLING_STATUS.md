@@ -1,46 +1,58 @@
-# Google Play Billing Integration Status - 2026-04-01
+# Google Play Billing Integration Status
+
+**Last updated:** 2026-06-22
 
 ## ✅ CURRENT STATUS: COMPLETE
 
-**RevenueCat Capacitor plugin integrated with Google Play Billing!**
+**Direct Google Play Billing via custom Capacitor plugin. No RevenueCat.**
 
 ## What Was Done
-1. ✅ Installed `@revenuecat/purchases-capacitor@6.1.2` plugin
-2. ✅ Updated minSdk from 22 to 23 (BillingClient requirement)
-3. ✅ Synced Capacitor with Android project
+1. ✅ Built custom `GooglePlayBillingPlugin.java` — direct Google Play Billing integration
+2. ✅ Registered plugin in `MainActivity.java`
+3. ✅ Updated minSdk from 22 to 23 (BillingClient requirement)
 4. ✅ Built release AAB with Google Play Billing integration
-
-## AAB File
-- **File:** `/home/james/.openclaw/workspace/tarot-decision-demo/tarot-decision-playstore-v2.aab`
-- **Size:** 7.6MB
-- **Package:** `com.keystonedigital.tarot`
-- **SDK:** 35 (Android 15)
-- **Billing:** RevenueCat Capacitor plugin (wraps Google Play Billing 8.3.0)
-
-## Play Store Assets (Ready)
-- **Icon:** `/home/james/.openclaw/workspace/tarot-decision-demo/assets-play-store/icon512.png` (273KB)
-- **Feature Graphic:** `/home/james/.openclaw/workspace/tarot-decision-demo/assets-play-store/featuregraphic.png` (514KB)
-- **Screenshots:** 8 screenshots in `/home/james/.openclaw/workspace/tarot-decision-demo/assets-play-store/drive-screenshots/` (all 1440x3120+)
+5. ✅ Paywall UI with 2 subscription tiers + free daily draw
+6. ✅ Access code system for testers ("Zeppelin" — tap title 5x)
 
 ## What This Means
-- RevenueCat handles Google Play Billing natively on Android
-- No RevenueCat Web configuration needed for Play Store
-- One-time purchase product "lifetime" configured in RevenueCat dashboard
-- Free tier (1 reading/day) enforced via localStorage
+- Custom plugin talks directly to Google Play Billing — no third-party SDK
+- No RevenueCat dashboard, API keys, or account needed
+- Products created directly in Google Play Console
+- 15% Play Store fee applies (standard small developer rate)
+- Plugin is reusable for future Keystone Digital apps
 
-## Next Steps
-1. Upload AAB to Google Play Console
-2. Configure in-app products in Play Console (matching RevenueCat product ID)
-3. Complete App Content questionnaires (select "NO" for gambling)
-4. Submit for review (estimated 2-4 week timeline)
+## Products (Google Play Console)
 
-## Technical Details
-- **RevenueCat SDK:** v6.1.2 (Capacitor plugin)
-- **BillingClient Version:** 8.3.0 (via RevenueCat)
-- **Min SDK:** 23 (Android 6.0+)
-- **Target SDK:** 35 (Android 15)
-- **RevenueCat SDK Key:** `rcb_sb_DRHrDhKnfxXPwiduqVzBrLqJz`
+| Product ID | Price | Type | Entitlement |
+|-----------|-------|------|-------------|
+| `tarot_monthly` | $9.99/mo | Subscription | premium |
+| `tarot_yearly` | $79.99/yr | Subscription | premium |
 
----
+Both products unlock the same premium features. Difference is billing period + price.
 
-*Updated 2026-04-01 15:32 CDT: Integration complete, AAB v2 built successfully*
+## Plugin Methods
+
+| Method | Purpose |
+|--------|---------|
+| `init()` | Connect to Google Play Billing |
+| `isPremium()` | Check if user has active subscription |
+| `purchase({ productId })` | Launch purchase flow |
+| `queryProducts({ productIds })` | Fetch product details from Google Play |
+| `restorePurchases()` | Restore existing purchases |
+
+## Key Files
+
+- **Plugin:** `android/app/src/main/java/com/keystonedigital/decisiontarot/plugins/billing/GooglePlayBillingPlugin.java`
+- **Registration:** `android/app/src/main/java/com/keystonedigital/decisiontarot/MainActivity.java`
+- **UI + Logic:** `public/index.html`
+- **Docs:** `GOOGLE_PLAY_BILLING.md` (full integration guide)
+
+## AAB
+
+- File: `tarot-decision-playstore-v2.aab`
+- Package: `com.keystonedigital.tarot`
+- SDK: 35 (Android 15), minSdk 23
+
+## Reusable
+
+This plugin is the standard billing approach for all Keystone Digital apps. Copy the Java file, register in MainActivity, create products in Play Console. No RevenueCat, no external dependencies.

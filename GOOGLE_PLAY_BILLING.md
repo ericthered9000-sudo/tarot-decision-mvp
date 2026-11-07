@@ -1,222 +1,122 @@
-# Google Play Billing Integration Guide
+# Google Play Billing — Direct Integration (No RevenueCat)
 
 **Status:** Implemented ✅
 
-The Decision Tarot app now uses **Google Play Billing** via the RevenueCat Capacitor native plugin (`@revenuecat/purchases-capacitor`). This is fully compliant with Play Store policies — the 15% fee tier applies.
+Decision Tarot uses a **custom Capacitor plugin** that talks directly to Google Play Billing. No third-party billing SDK, no RevenueCat dashboard, no external API keys. Just Google Play Console + the plugin.
+
+This is the standard approach for all Keystone Digital apps going forward.
 
 ---
 
-## What Was Changed
+## How It Works
 
-| Change | Details |
-|--------|---------|
-| Removed | `payment-config.js`, `payment-config.example.js`, `paywall-component.html` — old RevenueCat web SDK files |
-| Removed | `PAYMENT_SETUP.md`, `REVENUECAT_SETUP.md` — old setup guides |
-| Removed | `@revenuecat/purchases-js` — the web SDK npm package (bypassed Play Store billing) |
-| Kept | `@revenuecat/purchases-capacitor` v6.1.2 — the **native** Capacitor plugin (uses Google Play Billing properly) |
-| Rewritten | Payment engine in `public/index.html` — now supports 2 subscription tiers with free daily draw |
-| New | Free tier: 1 free 1-card daily draw, 3/7-card spreads require subscription |
-| New | Paywall UI with 2 selectable tiers (Monthly $9.99, Yearly $79.99) |
-| New | This guide |
+| Component | Details |
+|-----------|---------|
+| Plugin | `GooglePlayBillingPlugin.java` — custom Capacitor plugin in the app's Android source |
+| SDK | Google Play Billing Library (via Android dependency) |
+| Products | Created directly in Google Play Console |
+| Entitlements | Checked locally via `billing.isPremium()` — queries Google Play for active subscriptions |
+| Fee | 15% Play Store fee (standard for small developers) |
 
 ### Pricing Tiers
 
-| Tier | Product ID | Price | Type | Entitlement | Features |
-|------|-----------|-------|------|-------------|----------|
-| **Free** | — | $0 | — | — | 1 daily 1-card draw + encyclopedia |
-| **Monthly** | `tarot_monthly` | $9.99/mo | Subscription | `premium` | Unlimited readings, all spreads, AI insights, history, journal |
-| **Yearly** | `tarot_yearly` | $79.99/yr | Subscription | `premium` | Everything in monthly (~$6.67/mo, 33% off) |
+| Tier | Product ID | Price | Type | Features |
+|------|-----------|-------|------|----------|
+| **Free** | — | $0 | — | 1 daily 1-card draw + encyclopedia |
+| **Monthly** | `tarot_monthly` | $9.99/mo | Subscription | Unlimited readings, all spreads, AI insights, history, journal |
+| **Yearly** | `tarot_yearly` | $79.99/yr | Subscription | Everything in monthly (~$6.67/mo, 33% off) |
+
+Both monthly and yearly unlock the same `premium` entitlement — the difference is just billing period and price.
 
 ---
 
-## Manual Setup Steps (You Need to Do)
+## Plugin API
 
-### Step 1: Create Products in Google Play Console
+The plugin is registered as `GooglePlayBilling` on the Capacitor bridge. Available methods:
+
+### `init()`
+Connects to Google Play Billing. Must be called before any other method.
+
+### `isPremium()`
+Queries Google Play for active subscriptions. Returns `{ isPremium: boolean }`. Any active subscription = premium.
+
+### `purchase({ productId, offerToken? })`
+Launches the Google Play purchase flow for the given product ID. Returns `{ success, productId, purchaseToken, orderId, isAutoRenewing }` or `{ success: false, cancelled: true }`.
+
+### `queryProducts({ productIds: [] })`
+Fetches product details (price, title, description, offer token) from Google Play for the given product IDs. All products must be subscription type.
+
+### `restorePurchases()`
+Queries Google Play for existing purchases. Returns `{ products: [], success: true }`.
+
+---
+
+## Setup (Google Play Console Only)
 
 1. Go to [Google Play Console](https://play.google.com/console)
 2. Select app: **Decision Tarot** (`com.keystonedigital.tarot`)
-3. Navigate to: **Monetize** → **Products** → **In-app products**
+3. Navigate to: **Monetize → Products → In-app products**
 
 **Create Product 1 — Monthly Subscription:**
-- Click **Create product**
-- **Product ID:** `tarot_monthly`
-- **Name:** Monthly Subscription
-- **Description:** Unlimited tarot readings, all spreads, AI insights
-- **Price:** $9.99/mo
-- **Type:** Subscription (auto-renewable)
-- Click **Save** then **Activate**
+- Product ID: `tarot_monthly`
+- Name: Monthly Subscription
+- Price: $9.99/mo
+- Type: Subscription (auto-renewable)
+- Save then Activate
 
 **Create Product 2 — Yearly Subscription:**
-- Click **Create product**
-- **Product ID:** `tarot_yearly`
-- **Name:** Yearly Subscription
-- **Description:** Unlimited tarot readings at 33% off
-- **Price:** $79.99/yr
-- **Type:** Subscription (auto-renewable)
-- Click **Save** then **Activate**
+- Product ID: `tarot_yearly`
+- Name: Yearly Subscription
+- Price: $79.99/yr
+- Type: Subscription (auto-renewable)
+- Save then Activate
 
-### Step 2: Configure RevenueCat Dashboard
-
-1. Go to [RevenueCat Dashboard](https://app.revenuecat.com)
-2. Select your project: **Decision Tarot** (or create one if not done)
-3. Make sure the platform is **Google Play** (NOT Web)
-
-#### Create Entitlements
-
-1. Navigate to: **Entitlements** → **+ New**
-2. Create `premium`:
-   - **Identifier:** `premium`
-   - **Description:** Premium access — unlimited readings, all spreads, AI insights, history, journal
-
-#### Create Products in RevenueCat
-
-For each product:
-
-1. Navigate to: **Products** → **+ New**
-2. **Product 1 — Monthly:**
-   - **Identifier:** `tarot_monthly` (must match Google Play)
-   - **Type:** Subscription (auto-renewable)
-   - **Store:** Google Play
-   - **Product ID:** `tarot_monthly` (same as Google Play)
-   - Attach entitlement: `premium`
-
-3. **Product 2 — Yearly:**
-   - **Identifier:** `tarot_yearly` (must match Google Play)
-   - **Type:** Subscription (auto-renewable)
-   - **Store:** Google Play
-   - **Product ID:** `tarot_yearly` (same as Google Play)
-   - Attach entitlement: `premium`
-
-#### Create Offering
-
-1. Navigate to: **Offerings**
-2. Create offering:
-   - **Identifier:** `default`
-   - **Description:** Default offering
-3. Add packages (both):
-   - **Package 1:** Identifier `tarot_monthly`, Package Type: Monthly, Product: `tarot_monthly`
-   - **Package 2:** Identifier `tarot_yearly`, Package Type: Annual, Product: `tarot_yearly`
-4. Click **Save**
-
-### Step 3: Get API Keys
-
-1. In RevenueCat: **Project Settings** → **API Keys**
-2. Copy the **Google Play / Android** API key (starts with `goog_...`)
-3. This key is already in `index.html`:
-   ```javascript
-   const REVENUECAT_API_KEY = 'goog_pfkOiYhnnEgDTPgSChROlrVFSpg';
-   ```
-   If you get a new key, update this line.
-
-### Step 4: Test Purchase Flow
-
-1. Create a **License Tester** account in Google Play Console:
-   - Go to **Setup** → **License testing**
-   - Add your Gmail address
-   - Check **Licensed** for testing
-2. On your test device:
-   - Use the same Google account as the license tester
-   - Install the app via internal testing track
-3. Try the purchase flow — it should show all three tiers
-4. Select each tier and verify the purchase completes
-
-### Step 5: Verify Entitlements
-
-After a test purchase:
-1. Open RevenueCat Dashboard → **Customers**
-2. Find your test user
-3. Verify the entitlement (`lifetime_access` or `pro_plus`) shows as **Active**
-4. Test that premium gates unlock correctly:
-   - Unlimited readings
-   - All spread types
-   - History tracking
-   - Dashboard charts
-   - Reading journal
-   - Outcome tracking
+No RevenueCat configuration needed. No API keys to manage. The plugin talks directly to Google Play.
 
 ---
 
-## App Architecture
-
-### How It Works
-
-```
-User taps "Get Lifetime Access"
-       ↓
-RevenueCat Capacitor Plugin calls Google Play Billing
-       ↓
-Google Play shows purchase dialog (Play Store UI)
-       ↓
-Purchase completes → Google sends receipt to RevenueCat
-       ↓
-RevenueCat validates receipt, grants entitlement
-       ↓
-App queries entitlements via Purchases.getCustomerInfo()
-       ↓
-Premium features unlocked
-```
-
-### Entitlement Logic
+## JS Integration (index.html)
 
 ```javascript
-let isPremium = localStorage.getItem('premium_unlocked') === 'true';
+// Initialize
+await window.Capacitor.Plugins.GooglePlayBilling.init();
 
-// Check entitlements
-const active = info.entitlements.active;
-isPremium = !!active['premium'];
+// Check premium status
+const result = await window.Capacitor.Plugins.GooglePlayBilling.isPremium();
+const isPremium = result.isPremium;
 
-// Feature gates:
-// - 1 daily 1-card draw: always free
-// - unlimited readings: isPremium
-// - all spreads (3-card, 7-card): isPremium
-// - reading history: isPremium
-// - AI readings: always free (hook to upgrade)
-// - encyclopedia: always free
+// Purchase
+const result = await window.Capacitor.Plugins.GooglePlayBilling.purchase({
+  productId: 'tarot_monthly'
+});
+
+// Restore
+const result = await window.Capacitor.Plugins.GooglePlayBilling.restorePurchases();
 ```
 
-### Current API Key
+Premium status is also cached in `localStorage` as `premium_unlocked` for offline access.
 
-```
-goog_pfkOiYhnnEgDTPgSChROlrVFSpg
-```
+---
+
+## Access Code (Testing)
+
+A secret access code ("Zeppelin") can be entered by tapping the title 5 times. This unlocks premium locally for testers without going through Google Play.
 
 ---
 
 ## Troubleshooting
 
 ### "Products not available"
-- Google Play product IDs must match RevenueCat product IDs exactly
+- Product IDs in code must match Google Play Console exactly
 - Products must be **Activated** in Google Play Console
-- Products must be in an **Offering** in RevenueCat
-- App must be on an **internal testing track** (or published) for real purchases
+- App must be on a testing track or published
 
 ### "Purchase cancelled"
-- This is normal when user cancels (code: `PURCHASE_CANCELLED_ERROR`)
-- Not an error — the paywall just closes
+- Normal when user cancels (not an error)
 
-### "Purchase failed"
-- Check RevenueCat Dashboard → **Logs** for details
-- Verify API key is correct for Google Play
-- Check Google Play Console → **Monetize** → **Products** for activation status
-
-### "Already entitled"
-- User already purchased the product
-- Refreshed entitlements should unlock features automatically
-
----
-
-## Before Launch Checklist
-
-- [ ] Products created in Google Play Console (both: `tarot_monthly`, `tarot_yearly`)
-- [ ] Products created in RevenueCat (both, matching IDs)
-- [ ] Entitlement `premium` created in RevenueCat
-- [ ] Products linked to entitlement
-- [ ] Offering created with both packages
-- [ ] Google Play license testers configured
-- [ ] Test purchases work for both tiers
-- [ ] Premium gates unlock correctly in app
-- [ ] Free daily draw resets properly (1 per day)
-- [ ] App is on internal testing track or production track
+### "Billing not ready"
+- `init()` must succeed before calling other methods
+- Check that the plugin is registered in `MainActivity.java`
 
 ---
 
@@ -224,14 +124,16 @@ goog_pfkOiYhnnEgDTPgSChROlrVFSpg
 
 | File | Purpose |
 |------|---------|
-| `public/index.html` | All payment logic + paywall UI |
-| `GOOGLE_PLAY_BILLING.md` | This guide |
-| `node_modules/@revenuecat/purchases-capacitor/` | Native Capacitor plugin (Google Play Billing) |
+| `android/app/src/main/java/com/keystonedigital/decisiontarot/plugins/billing/GooglePlayBillingPlugin.java` | Custom Capacitor plugin (Google Play Billing) |
+| `android/app/src/main/java/com/keystonedigital/decisiontarot/MainActivity.java` | Plugin registration |
+| `public/index.html` | Payment logic + paywall UI |
 
-## Questions?
+## Reusable for Future Apps
 
-RevenueCat Capacitor Plugin docs:
-https://www.revenuecat.com/docs/getting-started/plugins/capacitor
+This plugin is self-contained and can be copied to other Keystone Digital apps. Steps:
+1. Copy `GooglePlayBillingPlugin.java` to the new app's Android source
+2. Register it in `MainActivity.java`
+3. Call `init()`, `isPremium()`, `purchase()` from JS
+4. Create matching products in Google Play Console
 
-Google Play Billing docs:
-https://developer.android.com/google/play/billing
+No RevenueCat. No external dependencies. No API keys to manage.

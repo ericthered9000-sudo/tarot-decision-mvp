@@ -1,0 +1,2 @@
+package_name("com.keystonedigital.decisiontarot")
+json_key_file("fastlane/play-store-api.json")

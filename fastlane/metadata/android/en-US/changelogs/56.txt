@@ -1,0 +1,1 @@
+Removed developer test mode from production build. Minor bug fixes and improvements.

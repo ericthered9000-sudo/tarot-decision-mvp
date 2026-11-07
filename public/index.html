@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Decision Tarot - Clarity at Life's Crossroads</title>
   <!-- Google Fonts - Mystical Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,14 +12,36 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    /* AdMob DEF-2 (QA t_1e8f4279): the app shell is a fixed, non-scrolling box that starts
+       BELOW the native banner and scrolls internally (top: inset, bottom: 0, overflow-y: auto).
+       The banner is a native Android view PAINTED OVER the WebView — it never pushes content —
+       so if the page itself scrolled, content would slide underneath the ad, which Google
+       classifies as "against policy" ("Banner ads should not float or hover over app content",
+       docs/admob-research.md §3.4.2). With the shell inset, the ad can never have content
+       behind it, and the reserved band is exactly the banner height instead of a padding guess.
+       DO NOT REMOVE the inset or move the scroll back onto the page: that re-opens DEF-2. */
+    html {
+      height: 100%;
+      overflow: hidden; /* the document itself never scrolls; body above is the scroller */
+    }
+
     body {
       font-family: 'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: #0f0c29;
       color: #eee;
-      min-height: 100vh;
       padding: 20px;
-      position: relative;
+      /* --admob-banner-inset is set by applyBannerInset() from bannerAdSizeChanged, in CSS px
+         (1 CSS px == 1 dp in this WebView). It is the shell's offset from the viewport top, so
+         the first line of content lands at inset + 20px. */
+      position: fixed;
+      top: var(--admob-banner-inset, 0px);
+      left: 0;
+      right: 0;
+      bottom: 0;
+      overflow-y: auto;
       overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
     }
 
     /* Animated Starfield Background */
@@ -979,7 +1001,7 @@
   <div class="stars" id="stars"></div>
 
   <div class="container">
-    <h1>🔮 Decision Tarot</h1>
+    <h1 onclick="onTitleTap()" style="cursor:pointer;user-select:none;">🔮 Decision Tarot</h1>
     <p class="subtitle">Clarity at Life's Crossroads</p>
 
     <!-- Navigation Tabs -->
@@ -1014,8 +1036,8 @@
 
         <!-- Spread Info -->
         <div class="spread-info" id="spread-info">
-          <h3>Three-Card Spread</h3>
-          <p>Perfect for understanding a decision. The cards represent: <strong>The Situation</strong>, <strong>The Choice</strong>, and <strong>The Outcome</strong>.</p>
+          <h3>Single Card</h3>
+          <p>A single card drawn for quick guidance. Perfect for daily reflection or a simple yes/no question.</p>
         </div>
 
         <label for="decision-type">What decision are you facing?</label>
@@ -1069,6 +1091,21 @@
             Start New Reading
           </button>
         </div>
+      </div>
+
+      <!-- Settings (Scenario D: reversals toggle — default ON = historical behaviour) -->
+      <div class="card" id="settings-card" style="margin-top: 20px;">
+        <h2 style="color: #d4af37; margin-bottom: 5px; font-size: 1.1rem;">Reading Settings</h2>
+        <p style="opacity: 0.7; margin-bottom: 15px; font-size: 0.85rem;">How your cards are drawn</p>
+        <label for="allow-reversed" style="display: flex; align-items: center; gap: 12px; cursor: pointer; text-transform: none; letter-spacing: 0; font-size: 1rem; color: #eee; margin: 0;">
+          <input type="checkbox" id="allow-reversed" checked onchange="setAllowReversed(this.checked)"
+            style="width: 22px; height: 22px; accent-color: #d4af37; cursor: pointer; flex: 0 0 auto;">
+          <span>Allow reversed cards</span>
+        </label>
+        <p style="opacity: 0.6; margin-top: 10px; font-size: 0.78rem; line-height: 1.4;">
+          On (default): cards may appear reversed with their reversed meaning — about 25% of cards
+          (35% in a Celtic Cross). Off: every card is drawn upright.
+        </p>
       </div>
     </div>
 
@@ -1195,21 +1232,111 @@
 
     let isPremium = localStorage.getItem('premium_unlocked') === 'true';
 
-    // Product identifiers — both tiers unlock the same premium access
+    // 🔑 Zeppelin access code — free premium for testers
+    const ACCESS_CODE = 'Zeppelin';
+    let accessCodeTaps = 0;
+    let accessCodeTimer = null;
+
+    if (localStorage.getItem('access_code_unlocked') === 'true') {
+      isPremium = true;
+      localStorage.setItem('premium_unlocked', 'true');
+    }
+
+    function showAccessCodePrompt() {
+      const existing = document.getElementById('access-code-modal');
+      if (existing) existing.remove();
+
+      const modal = document.createElement('div');
+      modal.id = 'access-code-modal';
+      modal.innerHTML = `
+        <div style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;"
+          onclick="if(event.target===this)document.getElementById('access-code-modal').remove()">
+          <div style="background:#1a1a2e;border-radius:14px;padding:24px;max-width:340px;width:100%;text-align:center;border:1px solid #d4af37;"
+            onclick="event.stopPropagation()">
+            <div style="font-size:2em;margin-bottom:8px;">🔑</div>
+            <h3 style="color:#d4af37;margin-bottom:12px;">Enter Access Code</h3>
+            <input type="text" id="access-code-input"
+              style="width:100%;padding:12px;border-radius:8px;border:1px solid #d4af37;background:#0f0c29;color:#eee;font-size:1em;text-align:center;outline:none;margin-bottom:12px;"
+              placeholder="Enter code" autocomplete="off">
+            <button onclick="redeemAccessCode()"
+              style="width:100%;padding:12px;background:#d4af37;color:#0f0c29;border:none;border-radius:8px;font-weight:700;font-size:1em;cursor:pointer;">Unlock</button>
+            <p id="access-code-error" style="color:#f44336;font-size:0.8em;margin-top:8px;display:none;"></p>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      setTimeout(() => document.getElementById('access-code-input')?.focus(), 100);
+    }
+
+    function redeemAccessCode() {
+      const input = document.getElementById('access-code-input');
+      const error = document.getElementById('access-code-error');
+      if (!input || !error) return;
+      const code = input.value.trim();
+      if (code === ACCESS_CODE) {
+        localStorage.setItem('premium_unlocked', 'true');
+        localStorage.setItem('access_code_unlocked', 'true');
+        isPremium = true;
+        // Drop the banner the moment entitlement flips — never keep advertising to a paid user.
+        if (typeof bannerRequested !== 'undefined' && bannerRequested) removeTopBanner();
+        document.getElementById('access-code-modal').remove();
+        alert('✨ Premium access unlocked! Thank you for testing.');
+      } else {
+        error.textContent = 'Invalid code. Please try again.';
+        error.style.display = 'block';
+        input.value = '';
+        input.focus();
+      }
+    }
+
+    function onTitleTap() {
+      accessCodeTaps++;
+      if (accessCodeTaps === 5) {
+        accessCodeTaps = 0;
+        showAccessCodePrompt();
+      }
+      clearTimeout(accessCodeTimer);
+      accessCodeTimer = setTimeout(() => { accessCodeTaps = 0; }, 2000);
+    }
+
+    // Product identifiers — every tier unlocks the same premium access.
+    //
+    // Scenario D (approved 2026-10-28) SKU sheet — see docs/competitive-analysis.md §4.1:
+    //   tarot_lifetime  $9.99 once   ← hero SKU (INAPP non-consumable)
+    //   tarot_monthly   $4.99 /mo    ← ladder for the hesitant buyer
+    //   yearly_base     DEACTIVATED Play-side — intentionally NOT offered in the paywall UI.
+    //
+    // NOTE (P0, v5.1.0): `yearly` must stay the Play Console product id `yearly_base`. Play
+    // product ids are immutable and the previously shipped id was wrong, which made every
+    // yearly purchase fail silently ("product not found") for the whole life of v5.0.x.
+    // Full history: docs/competitive-analysis.md §1.3 + docs/competitive-analysis-build-notes.md.
+    // The constant is kept (correct id, no UI entry) so a future release can re-enable yearly
+    // without re-litigating the id; nothing in the app queries it today.
     const PRODUCTS = {
       monthly: {
         id: 'tarot_monthly',
-        price: '$9.99',
+        price: '$4.99',
         period: '/mo',
         label: 'Monthly',
-        badge: '$9.99/mo'
+        badge: '$4.99/mo'
       },
+      // DEACTIVATED on Play (0 subscribers, repriced out of existence by the $9.99 lifetime).
+      // Kept for reference/future re-enable only — do not add back to showPaywall().
       yearly: {
-        id: 'tarot_yearly',
+        id: 'yearly_base',
         price: '$79.99',
         period: '/yr',
-        label: 'Yearly',
+        label: 'Yearly (deactivated)',
         badge: '$79.99/yr'
+      },
+      // One-time (INAPP, non-consumable) — removes ads + unlocks every spread, forever.
+      // Requires the dual product-type billing plugin paths (see GooglePlayBillingPlugin.java).
+      lifetime: {
+        id: 'tarot_lifetime',
+        price: '$9.99',
+        period: ' once',
+        label: 'Lifetime',
+        badge: '$9.99 once'
       }
     };
 
@@ -1247,10 +1374,13 @@
         await waitForCapacitor();
         const billing = window.Capacitor.Plugins.GooglePlayBilling;
         if (!billing) throw new Error('GooglePlayBilling plugin not found');
-        await billing.init();
+        
+        // Init with timeout to prevent hanging
+        await withTimeout(billing.init(), 10000);
         console.log('✅ Google Play Billing plugin initialized');
       } catch (error) {
         console.error('Google Play Billing init failed:', error);
+        throw error;
       }
     }
 
@@ -1261,11 +1391,18 @@
         if (!billing) return isPremium;
 
         const result = await withTimeout(billing.isPremium());
-        isPremium = result?.isPremium === true;
+        // A locally-granted entitlement (Zeppelin access code) is invisible to Play Billing:
+        // querying Play returns isPremium:false for it. Never let that query revoke it, or the
+        // tester is silently downgraded (and shown ads) on every restart.
+        const codeUnlocked = localStorage.getItem('access_code_unlocked') === 'true';
+        isPremium = result?.isPremium === true || codeUnlocked;
 
         if (isPremium) {
           localStorage.setItem('premium_unlocked', 'true');
           localStorage.setItem('premium_tier', 'premium');
+          // Entitlement just flipped to paid (e.g. a purchase completed): drop the banner
+          // and give the reserved space back. A paid user must never keep seeing an ad.
+          if (typeof bannerRequested !== 'undefined' && bannerRequested) removeTopBanner();
         }
         return isPremium;
       } catch (err) {
@@ -1273,9 +1410,6 @@
         return isPremium;
       }
     }
-
-    // Initialize + check on load
-    initBilling().then(() => checkPremium());
 
     // Purchase a product via Google Play Billing
     async function purchaseProduct(productId) {
@@ -1307,30 +1441,124 @@
     }
 
     // Show paywall modal — 2 tiers: monthly + yearly
-    // DEV: Tap subtitle 5 times to toggle premium for testing
-    let subtitleTapCount = 0;
-    document.addEventListener('DOMContentLoaded', () => {
-      const subtitle = document.querySelector('.subtitle');
-      if (subtitle) {
-        subtitle.style.cursor = 'pointer';
-        subtitle.addEventListener('click', () => {
-          subtitleTapCount++;
-          if (subtitleTapCount >= 5) {
-            subtitleTapCount = 0;
-            isPremium = !isPremium;
-            localStorage.setItem('premium_unlocked', isPremium ? 'true' : '');
-            alert(isPremium ? '🎉 Premium UNLOCKED for testing!' : '🔒 Premium locked (dev mode off)');
-            // Refresh current tab UI
-            const activeTab = document.querySelector('.tab-content.active');
-            if (activeTab) {
-              const tabId = activeTab.id;
-              if (tabId === 'tab-dashboard') loadDashboard();
-              else if (tabId === 'tab-reading') { /* refresh draw button state */ }
-            }
-          }
+    
+
+    // ========== ADMOB — TOP BANNER (FREE TIER ONLY) ==========
+    // Authoritative notes: docs/admob-research.md (§1.2, §2.2, §3.4) + docs/admob-build-notes.md
+    //
+    // Going live is exactly two edits:
+    //   1. ADMOB_BANNER_AD_UNIT below  → real banner ad unit id
+    //   2. admob_app_id in android/app/src/main/res/values/strings.xml → real App ID
+    // (and flip ADMOB_IS_TESTING to false). Both are Google TEST ids today.
+    const ADMOB_BANNER_AD_UNIT = 'ca-app-pub-5381651750373174/4018492747'; // LIVE banner unit decisiontarot_banner_top (swapped from test 2026-10-28)
+    const ADMOB_IS_TESTING = false;                                       // LIVE — James's real unit + app ID
+    const ADMOB_AD_SIZE = 'ADAPTIVE_BANNER';
+    const ADMOB_POSITION = 'TOP_CENTER';
+
+    let bannerRequested = false;   // showBanner() has been called at least once
+    let bannerShown = false;       // native banner currently on screen
+    let bannerSizeListener = null;
+
+    // The plugin reports the banner size in dp. This page is laid out at
+    // width=device-width, initial-scale=1 (see the viewport meta above), so in an Android
+    // WebView **1 CSS px already equals 1 dp** — the reported height can be used verbatim.
+    // Used ONLY by statusBarHeightDp() below, which converts CSS px -> dp for the plugin's
+    // `margin` option (the opposite direction).
+    const admobDpr = () => window.devicePixelRatio || 1;
+
+    // Status-bar inset in dp. Used for the banner's own top margin on Android < 15;
+    // on Android 15+ the plugin overrides the margin with the real window inset.
+    function statusBarHeightDp() {
+      const probe = document.createElement('div');
+      probe.style.cssText = 'position:fixed;top:0;left:0;width:0;visibility:hidden;pointer-events:none;height:env(safe-area-inset-top, 0px);';
+      document.body.appendChild(probe);
+      const px = probe.getBoundingClientRect().height;
+      probe.remove();
+      const dp = Math.round(px / admobDpr());
+      return dp > 0 ? dp : 24; // 24dp = Android's default status bar height
+    }
+
+    // Reserve (or release) the band the native banner occupies at the top of the screen.
+    // DEF-1 (QA t_1e8f4279): do NOT multiply by devicePixelRatio. 1 CSS px == 1 dp in this
+    // WebView, so the old `* admobDpr()` turned a 64dp banner into a 168px inset — a ~104 CSS px
+    // dead band under the ad on every free-tier screen. See docs/admob-research.md §2.2.
+    function applyBannerInset(heightDp) {
+      const px = Math.max(0, Math.round(heightDp || 0)); // dp -> CSS px is 1:1
+      document.documentElement.style.setProperty('--admob-banner-inset', px + 'px');
+      console.log('[AdMob] content inset = ' + px + 'px (banner ' + (heightDp || 0) + 'dp)');
+    }
+
+    function admobPlugin() {
+      return window.Capacitor && window.Capacitor.Plugins ? window.Capacitor.Plugins.AdMob : null;
+    }
+
+    // MANDATORY order: entitlement already checked by caller → initialize()
+    // → requestConsentInfo() → showConsentForm() only when canRequestAds === false → showBanner().
+    async function initAdMob() {
+      const admob = admobPlugin();
+      if (!admob) { console.log('[AdMob] plugin not present (web/dev build) — skipping'); return; }
+      if (isPremium) { console.log('[AdMob] premium user — no ad request made'); return; }
+
+      await admob.initialize({ maxAdContentRating: 'Teen' });
+
+      let consent = await admob.requestConsentInfo();
+      console.log('[AdMob] consent status=' + consent.status + ' canRequestAds=' + consent.canRequestAds);
+      if (consent.canRequestAds === false && consent.isConsentFormAvailable) {
+        consent = await admob.showConsentForm();
+      }
+      if (consent.canRequestAds === false) {
+        console.log('[AdMob] consent does not allow ads — banner not requested');
+        return;
+      }
+      if (isPremium) { console.log('[AdMob] premium now — no ad request made'); return; }
+      await showTopBanner(admob);
+    }
+
+    async function showTopBanner(admob) {
+      if (isPremium || bannerRequested) return;
+      // Listener BEFORE showBanner(): the first size event arrives on ad load and is what
+      // reserves the space. Miss it and the banner covers the header.
+      if (!bannerSizeListener) {
+        bannerSizeListener = await admob.addListener('bannerAdSizeChanged', (size) => {
+          const h = size && typeof size.height === 'number' ? size.height : 0;
+          bannerShown = h > 0;
+          applyBannerInset(h);
+        });
+        await admob.addListener('bannerAdFailedToLoad', (err) => {
+          console.warn('[AdMob] banner failed to load:', err && (err.message || err.code));
+          bannerShown = false;
+          applyBannerInset(0);
         });
       }
-    });
+      bannerRequested = true;
+      await admob.showBanner({
+        adId: ADMOB_BANNER_AD_UNIT,
+        adSize: ADMOB_AD_SIZE,
+        position: ADMOB_POSITION,
+        margin: statusBarHeightDp(),  // Android <15 only; Android 15+ applies the real inset
+        isTesting: ADMOB_IS_TESTING,
+        npa: false
+      });
+      console.log('[AdMob] banner requested (testing=' + ADMOB_IS_TESTING + ')');
+    }
+
+    // Entitlement flipped to paid: destroy the banner (not just hide) and give the space back.
+    async function removeTopBanner() {
+      const admob = admobPlugin();
+      if (!admob || !bannerRequested) { applyBannerInset(0); return; }
+      try { await admob.removeBanner(); } catch (err) { console.warn('[AdMob] removeBanner:', err.message); }
+      bannerRequested = false;
+      bannerShown = false;
+      applyBannerInset(0);
+    }
+
+    // Boot: billing → entitlement → AdMob. An ad is never requested before entitlement is known.
+    (async function bootMonetization() {
+      try { await initBilling(); } catch (err) { console.warn('Billing init failed:', err.message); }
+      try { await checkPremium(); } catch (err) { console.warn('Premium check failed:', err.message); }
+      if (isPremium) { console.log('[AdMob] premium user — banner never requested'); return; }
+      try { await initAdMob(); } catch (err) { console.warn('[AdMob] init failed:', err.message); }
+    })();
 
     function showPaywall(source = 'daily_limit') {
       const existing = document.getElementById('paywall-modal');
@@ -1346,28 +1574,29 @@
             
             <div style="font-size:3em;margin-bottom:10px;">🔮</div>
             <h2 style="color:#d4af37;margin-bottom:4px;font-size:1.5em;">Unlock Full Access</h2>
-            <p style="color:#aaa;margin-bottom:20px;font-size:0.85em;">Get unlimited readings, all spreads, AI insights, reading history, and more</p>
+            <p style="color:#aaa;margin-bottom:20px;font-size:0.85em;">Remove ads and unlock unlimited Celtic Cross readings. Journal, outcome tracking and the daily card are always free.</p>
 
-            <!-- Monthly option -->
-            <div style="background:rgba(212,175,55,0.08);border:2px solid #d4af37;border-radius:14px;padding:20px 18px;margin-bottom:12px;cursor:pointer;" onclick="initiatePaywallPurchase('monthly')">
-              <div style="font-size:2.2em;font-weight:700;color:#d4af37;">$9.99</div>
-              <div style="font-size:0.85em;color:#aaa;margin-top:4px;">per month • cancel anytime</div>
+            <!-- Lifetime option — one-time purchase, the hero SKU (Scenario D: $9.99) -->
+            <div id="paywall-lifetime" style="background:linear-gradient(135deg, rgba(76,175,80,0.15) 0%, rgba(76,175,80,0.05) 100%);border:2px solid #4caf50;border-radius:14px;padding:20px 18px;margin-bottom:12px;cursor:pointer;position:relative;" onclick="initiatePaywallPurchase('lifetime')">
+              <div style="position:absolute;top:-10px;right:10px;background:#4caf50;color:#0f0c29;font-size:0.65em;font-weight:700;padding:4px 12px;border-radius:20px;">BEST VALUE</div>
+              <div style="font-size:2.2em;font-weight:700;color:#4caf50;">$9.99</div>
+              <div style="font-size:0.85em;color:#aaa;margin-top:4px;">one-time • pay once, yours forever</div>
               <div style="margin-top:10px;text-align:left;display:inline-block;">
-                <div style="color:#ccc;font-size:0.85em;margin:3px 0;">✓ Unlimited daily readings</div>
-                <div style="color:#ccc;font-size:0.85em;margin:3px 0;">✓ All spreads (1, 3, 7-card)</div>
-                <div style="color:#ccc;font-size:0.85em;margin:3px 0;">✓ AI-powered interpretations</div>
-                <div style="color:#ccc;font-size:0.85em;margin:3px 0;">✓ Reading history & journal</div>
+                <div style="color:#ccc;font-size:0.85em;margin:3px 0;">✓ Removes ads forever</div>
+                <div style="color:#ccc;font-size:0.85em;margin:3px 0;">✓ Unlimited Celtic Cross readings</div>
+                <div style="color:#ccc;font-size:0.85em;margin:3px 0;">✓ AI-written readings</div>
+                <div style="color:#ccc;font-size:0.85em;margin:3px 0;">✓ No subscription</div>
               </div>
             </div>
 
-            <!-- Yearly option (highlighted) -->
-            <div style="background:linear-gradient(135deg, rgba(212,175,55,0.15) 0%, rgba(212,175,55,0.05) 100%);border:2px solid #d4af37;border-radius:14px;padding:20px 18px;margin-bottom:20px;cursor:pointer;position:relative;" onclick="initiatePaywallPurchase('yearly')">
-              <div style="position:absolute;top:-10px;right:10px;background:#d4af37;color:#0f0c29;font-size:0.65em;font-weight:700;padding:4px 12px;border-radius:20px;">BEST VALUE</div>
-              <div style="font-size:2.2em;font-weight:700;color:#d4af37;">$79.99</div>
-              <div style="font-size:0.85em;color:#aaa;margin-top:4px;">per year • save 33%</div>
+            <!-- Monthly option (ladder for the hesitant buyer — Scenario D: $4.99) -->
+            <div style="background:rgba(212,175,55,0.08);border:2px solid #d4af37;border-radius:14px;padding:20px 18px;margin-bottom:20px;cursor:pointer;" onclick="initiatePaywallPurchase('monthly')">
+              <div style="font-size:2.2em;font-weight:700;color:#d4af37;">$4.99</div>
+              <div style="font-size:0.85em;color:#aaa;margin-top:4px;">per month • cancel anytime</div>
               <div style="margin-top:10px;text-align:left;display:inline-block;">
-                <div style="color:#ccc;font-size:0.85em;margin:3px 0;">✓ Everything in monthly</div>
-                <div style="color:#ccc;font-size:0.85em;margin:3px 0;">✓ Just $6.67/month</div>
+                <div style="color:#ccc;font-size:0.85em;margin:3px 0;">✓ Removes ads</div>
+                <div style="color:#ccc;font-size:0.85em;margin:3px 0;">✓ Unlimited Celtic Cross readings</div>
+                <div style="color:#ccc;font-size:0.85em;margin:3px 0;">✓ AI-powered interpretations</div>
               </div>
             </div>
 
@@ -1383,8 +1612,14 @@
     }
 
     function initiatePaywallPurchase(tier = 'monthly') {
-      const productId = tier === 'yearly' ? PRODUCTS.yearly.id : PRODUCTS.monthly.id;
-      const price = tier === 'yearly' ? PRODUCTS.yearly.badge : PRODUCTS.monthly.badge;
+      // 'monthly' is an auto-renewing SUBS product; 'lifetime' is a one-time INAPP product.
+      // 'yearly' is DEACTIVATED Play-side (Scenario D) and is no longer reachable from the
+      // paywall UI — the branch stays only so a future re-enable is a one-line UI change.
+      const product = tier === 'lifetime' ? PRODUCTS.lifetime
+                    : tier === 'yearly'   ? PRODUCTS.yearly
+                    : PRODUCTS.monthly;
+      const productId = product.id;
+      const price = product.badge;
 
       const modalContent = document.querySelector('#paywall-modal div[style*="max-width:400px"]');
       if (modalContent) {
@@ -1412,26 +1647,71 @@
       })();
     }
 
-    // Daily draw limit for free users
+    // ========== FREE-TIER DAILY ALLOWANCE (Scenario D) ==========
+    // Free = UNLIMITED 1-card + UNLIMITED 3-card + ONE Celtic Cross (7-card) per day.
+    // This counter therefore tracks ONLY 7-card draws. Single/three-card draws never touch it.
+    // Key is separate from the legacy 'dailyDraws' counter (which used to count every free
+    // draw) so upgrading users aren't wrongly blocked by yesterday's single-card reading.
+    const CELTIC_DRAW_KEY = 'celticCrossDraws';
+    const FREE_CELTIC_PER_DAY = 1;
+
     function getDailyDrawCount() {
       const today = new Date().toDateString();
-      const stored = localStorage.getItem('dailyDraws');
+      const stored = localStorage.getItem(CELTIC_DRAW_KEY);
       if (!stored) return 0;
-      const data = JSON.parse(stored);
-      return data.date === today ? data.count : 0;
+      try {
+        const data = JSON.parse(stored);
+        return data.date === today ? data.count : 0;
+      } catch (e) {
+        return 0;
+      }
     }
 
     function incrementDailyDraw() {
       const today = new Date().toDateString();
-      const stored = localStorage.getItem('dailyDraws');
+      const stored = localStorage.getItem(CELTIC_DRAW_KEY);
       let count = 1;
       if (stored) {
-        const data = JSON.parse(stored);
-        if (data.date === today) count = data.count + 1;
+        try {
+          const data = JSON.parse(stored);
+          if (data.date === today) count = data.count + 1;
+        } catch (e) { count = 1; }
       }
-      localStorage.setItem('dailyDraws', JSON.stringify({ date: today, count }));
+      localStorage.setItem(CELTIC_DRAW_KEY, JSON.stringify({ date: today, count }));
       return count;
     }
+
+    // Free users get one Celtic Cross per day; premium is unlimited.
+    function celticAllowanceUsed() {
+      return !isPremium && getDailyDrawCount() >= FREE_CELTIC_PER_DAY;
+    }
+
+    // ========== REVERSALS PREFERENCE ==========
+    // Default ON preserves the historical behaviour (25% / 35% reversal chance). A reader who
+    // only reads upright cards was silently getting reversed cards they never asked for —
+    // trust issue, so it is a user-controlled setting now.
+    function allowReversedCards() {
+      return localStorage.getItem('allow_reversed') !== 'false';
+    }
+
+    function setAllowReversed(on) {
+      localStorage.setItem('allow_reversed', on ? 'true' : 'false');
+      const box = document.getElementById('allow-reversed');
+      if (box) box.checked = on;
+      console.log('[Settings] allow_reversed = ' + (on ? 'true' : 'false'));
+    }
+
+    // Single source of truth for card orientation on every draw path.
+    function pickOrientation(reversalChance) {
+      if (!allowReversedCards()) return 'upright';
+      return Math.random() < reversalChance ? 'reversed' : 'upright';
+    }
+
+    // Reflect the stored preference in the settings checkbox on boot.
+    (function initReversalToggle() {
+      const box = document.getElementById('allow-reversed');
+      if (box) box.checked = allowReversedCards();
+    })();
 
     // Robust fetch wrapper with retry logic and exponential backoff
     async function fetchWithRetry(url, options = {}, retries = 2, backoff = 1000) {
@@ -1512,9 +1792,10 @@
 
     // Select spread type
     function selectSpread(num) {
-      // Premium gate: 3-card and 7-card spreads require premium
-      if (!isPremium && num > 1) {
-        showPaywall();
+      // Scenario D free tier: 1-card and 3-card are free and unlimited. Only the 7-card
+      // Celtic Cross is metered — one per day for free users, unlimited for premium.
+      if (num === 7 && celticAllowanceUsed()) {
+        showPaywall('celtic_daily_limit');
         return;
       }
       currentSpread = num;
@@ -1593,13 +1874,11 @@
     });
 
     async function drawCards() {
-      // Check daily limit for free users
-      if (!isPremium) {
-        const dailyCount = getDailyDrawCount();
-        if (dailyCount >= 1) {
-          showPaywall();
-          return;
-        }
+      // Scenario D: the only metered spread for free users is the 7-card Celtic Cross
+      // (1/day). Single and three-card draws are free and unlimited — no counter, no paywall.
+      if (currentSpread === 7 && celticAllowanceUsed()) {
+        showPaywall('celtic_daily_limit');
+        return;
       }
 
       const decisionType = document.getElementById('decision-type').value;
@@ -1641,20 +1920,21 @@
           ? customText
           : `Should I move forward with this ${decisionType} decision?`;
 
-        // Determine upright/reversed (API doesn't provide, so we randomize)
-        // Higher reversal chance for Celtic Cross (more nuanced reading)
+        // Determine upright/reversed (API doesn't provide, so we randomize).
+        // Higher reversal chance for Celtic Cross (more nuanced reading); the user's
+        // "Allow reversed cards" setting forces all-upright when switched off.
         const reversalChance = currentSpread === 7 ? 0.35 : 0.25;
         const cardsWithOrientation = cards.map(card => ({
           ...card,
-          orientation: Math.random() < reversalChance ? 'reversed' : 'upright'
+          orientation: pickOrientation(reversalChance)
         }));
 
         // Generate reading via AI endpoint, fallback to template
         const spread_name = SPREADS[cardsWithOrientation.length].name;
         const reading = await callAiReading(cardsWithOrientation, question, name || 'seeker', spread_name);
 
-        // Increment daily draw count for free users
-        if (!isPremium) {
+        // Meter only the Celtic Cross for free users (1/day). 1-card and 3-card are unlimited.
+        if (!isPremium && currentSpread === 7) {
           incrementDailyDraw();
         }
 
@@ -1739,9 +2019,32 @@
     }
 
     // ========== AI READING ENDPOINT ==========
+    // ABSOLUTE URL on purpose. A relative '/api/reading' inside the Capacitor APK
+    // resolves to https://localhost/api/reading, which 404s and silently drops every
+    // user to the template fallback. This constant is the single source of truth —
+    // repoint the app by changing this one line.
+    // Deployed function: tarot-decision-demo (Vercel) → api/reading.js (Groq).
+    const AI_READING_ENDPOINT = 'https://tarot-decision-demo.vercel.app/api/reading';
+
+    // Shown to free users in place of an AI-written reading (Scenario D: AI text is
+    // a premium entitlement; the card template itself stays free and unlimited).
+    function getAiUnlockPitch() {
+      return `<div class="card-interpretation" style="text-align:center;border:1px solid rgba(212,175,55,0.35);border-radius:12px;padding:16px;margin-top:16px;">
+        <div style="font-size:1.5em;margin-bottom:6px;">✨</div>
+        <strong style="color:#d4af37;">AI-written readings are a premium feature</strong>
+        <div style="font-size:0.9em;opacity:0.8;margin-top:6px;">The interpretation above is the classic template. Unlock to have a reader write it for you personally, in the context of your exact question.</div>
+        <button onclick="showPaywall('ai_reading')" style="margin-top:12px;padding:12px 24px;background:linear-gradient(135deg,#ffd700,#ffb700);border:none;border-radius:10px;color:#1a1a2e;font-weight:700;cursor:pointer;">Unlock AI Readings</button>
+      </div>`;
+    }
+
     async function callAiReading(cards, question, name, spread_name) {
+      // Premium gate lives here so both the web build and the APK behave identically:
+      // free users get the template reading + the unlock pitch, never a network call.
+      if (!isPremium) {
+        return getReading(cards, question, name) + getAiUnlockPitch();
+      }
       try {
-        const response = await fetch('/api/reading', {
+        const response = await fetch(AI_READING_ENDPOINT, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ cards, question, name, spread_name })
@@ -1944,19 +2247,8 @@
       const today = new Date().toDateString();
       const cachedDaily = localStorage.getItem('dailyCard');
 
-      // Check daily limit for free users (same as draw limit)
-      if (!isPremium && getDailyDrawCount() >= 1) {
-        showPaywall();
-        container.innerHTML = `
-          <div class="history-empty">
-            <div class="history-empty-icon">🔮</div>
-            <p>Daily card limit reached. Upgrade to unlimited.</p>
-            <button class="paywall-btn" onclick="showPaywall()" style="margin-top:15px;padding:12px 24px;background:linear-gradient(135deg, #ffd700, #ffb700);border:none;border-radius:10px;color:#1a1a2e;font-weight:700;cursor:pointer;">Unlock Unlimited</button>
-          </div>
-        `;
-        return;
-      }
-
+      // Daily card is FREE and unmetered (Scenario D). It used to share the old 1/day
+      // single-card counter, which is exactly the wall D removes.
       if (cachedDaily) {
         const parsed = JSON.parse(cachedDaily);
         if (parsed.date === today) {
@@ -1973,7 +2265,7 @@
 
         dailyCardData = {
           ...card,
-          orientation: Math.random() < 0.25 ? 'reversed' : 'upright'
+          orientation: pickOrientation(0.25)
         };
 
         // Cache for today
@@ -1981,11 +2273,6 @@
           date: today,
           card: dailyCardData
         }));
-
-        // Increment daily draw for free users
-        if (!isPremium) {
-          incrementDailyDraw();
-        }
 
         displayDailyCard(dailyCardData);
       } catch (err) {
@@ -2160,10 +2447,9 @@
     }
 
     function showOutcomeForm(index) {
-      if (!isPremium) {
-        showTrackingPaywall();
-        return;
-      }
+      // Scenario D: outcome tracking / journal is FREE for everyone. It was gated behind
+      // premium in code while the Play listing claimed the same thing — both were wrong.
+      // The moat feature stays free on purpose (§4 verdict: it's the install/retention lever).
 
       const history = JSON.parse(localStorage.getItem('readingHistory') || '[]');
       const reading = history[index];
@@ -2219,10 +2505,6 @@
       document.getElementById('outcome-modal').classList.remove('active');
       loadHistory();
       updateDashboardStats();
-    }
-
-    function showTrackingPaywall() {
-      showPaywall('tracking');
     }
 
     function showHistoryReading(index) {
@@ -2365,16 +2647,8 @@
         </div>
       `;
 
-      // Lock premium badge
-      if (!isPremium) {
-        chartContainer.innerHTML += `
-          <div style="margin-top:20px;padding:16px;background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.2);border-radius:12px;text-align:center;">
-            <div style="font-size:1.1rem;color:#d4af37;margin-bottom:6px;">🔒 Premium Feature</div>
-            <p style="font-size:0.9rem;opacity:0.8;margin-bottom:12px;">Upgrade to track unlimited outcomes and unlock the full Decision Dashboard with trends and insights.</p>
-            <button class="paywall-btn" onclick="showPaywall()" style="padding:12px 24px;background:linear-gradient(135deg,#ffd700,#ffb700);border:none;border-radius:10px;color:#1a1a2e;font-weight:700;cursor:pointer;">Unlock Premium</button>
-          </div>
-        `;
-      }
+      // Scenario D: NO premium lock on the dashboard. Outcome tracking is the app's moat and
+      // ships free — a "Premium Feature" badge over it contradicted both D and the listing.
     }
 
     function updateDashboardStats() {

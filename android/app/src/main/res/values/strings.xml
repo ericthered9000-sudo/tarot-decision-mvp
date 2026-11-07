@@ -1,7 +1,17 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Tarot Decision</string>
-    <string name="title_activity_main">Tarot Decision</string>
-    <string name="package_name">com.keystonedigital.tarot</string>
-    <string name="custom_url_scheme">com.keystonedigital.tarot</string>
+    <string name="app_name">Decision Tarot</string>
+    <string name="title_activity_main">Decision Tarot</string>
+    <string name="package_name">com.keystonedigital.decisiontarot</string>
+    <string name="custom_url_scheme">com.keystonedigital.decisiontarot</string>
+
+    <!--
+      AdMob App ID (the one with the ~, not the / of an ad unit).
+      THIS IS GOOGLE'S PUBLIC TEST APP ID — it must be replaced with the real
+      ca-app-pub-XXXXXXXXXXXXXXXX~NNNNNNNNNN from AdMob before shipping versionCode 64.
+      The SDK crashes at startup if this string is missing, so never delete the entry.
+      The matching banner ad unit id lives in public/index.html (ADMOB_BANNER_AD_UNIT)
+      and must be swapped in the same commit.
+    -->
+    <string name="admob_app_id" translatable="false">ca-app-pub-5381651750373174~8318710735</string>
 </resources>

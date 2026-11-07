@@ -1,49 +1,37 @@
-# Dependencies
+# dependencies
 node_modules/
 
-# Build output
+# build output
 android/app/build/
+android/build/
 android/.gradle/
+android/app/.gradle/
 android/captures/
 builds/
+dist/
 *.apk
 *.aab
-
-# IDE
-.idea/
-.expo/
-*.iml
-
-# Generated
 classes*.dex
 kotlin/
 META-INF/
-res/
-resources.arsc
-DebugProbesKt.bin
-AndroidManifest.xml
 org/
-r
+DebugProbesKt.bin
+gen-screenshots.mjs.tmp*
 
-# Local configs
-*.local.properties
-android/google-services.json
-android/google-services.json.service_account
-android/tarot-release-key.keystore
-fastlane/play-store-api.json
-
-# OS
+# IDE / tooling
+.idea/
+.expo/
+*.iml
 .DS_Store
-Thumbs.db
+fastlane/report.xml
 
-# Backups
-*.backup
-*.backup-*
-
-# Capacitor generated
-assets/
-capacitor.config.json
-app.json
-
-# Vercel
-.vercel/
+# SECRETS — never commit
+*.keystore
+*.jks
+*.pem
+.env
+.env.*
+!.env.example
+fastlane/play-store-api.json
+*service-account*.json
+play-store-api.json

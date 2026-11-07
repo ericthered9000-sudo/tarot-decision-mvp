@@ -1,0 +1,2395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Decision Tarot - Clarity at Life's Crossroads</title>
+  <!-- Google Fonts - Mystical Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f0c29;
+      color: #eee;
+      min-height: 100vh;
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Animated Starfield Background */
+    .stars {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .star {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle 2s ease-in-out infinite;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 2.5rem;
+      text-align: center;
+      margin-bottom: 10px;
+      color: #d4af37;
+      text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+      letter-spacing: 3px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .subtitle {
+      text-align: center;
+      opacity: 0.85;
+      margin-bottom: 30px;
+      font-size: 1rem;
+      font-weight: 500;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card {
+      background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
+      border-radius: 20px;
+      padding: 28px;
+      margin-bottom: 20px;
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.15);
+      box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        0 0 40px rgba(147, 51, 234, 0.1);
+      position: relative;
+      z-index: 1;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 600;
+      color: #d4af37;
+      font-size: 0.95rem;
+      letter-spacing: 0.5px;
+    }
+
+    select, input, textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      background: rgba(15, 12, 41, 0.6);
+      color: #eee;
+      font-size: 1rem;
+      font-family: 'Quicksand', sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    select:focus, input:focus, textarea:focus {
+      outline: none;
+      border-color: rgba(212, 175, 55, 0.6);
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+    }
+
+    textarea { resize: vertical; min-height: 90px; }
+
+    /* Spread selector buttons */
+    .spread-selector {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .spread-btn {
+      flex: 1;
+      min-width: 140px;
+      padding: 16px 12px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+      border: 2px solid rgba(255, 215, 0, 0.2);
+      border-radius: 12px;
+      color: #ccc;
+      font-family: 'Cinzel', serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+
+    .spread-btn:hover {
+      border-color: rgba(255, 215, 0, 0.4);
+      color: #fff;
+    }
+
+    .spread-btn.active {
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(212, 175, 55, 0.05) 100%);
+      border-color: #d4af37;
+      color: #d4af37;
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+    }
+
+    .spread-btn .spread-name {
+      display: block;
+      font-size: 1.1rem;
+      margin-bottom: 4px;
+    }
+
+    .spread-btn .spread-cards {
+      font-size: 0.75rem;
+      opacity: 0.7;
+      font-family: 'Quicksand', sans-serif;
+    }
+
+    button {
+      width: 100%;
+      padding: 18px;
+      background: linear-gradient(135deg, #d4af37 0%, #c5a028 50%, #d4af37 100%);
+      color: #0f0c29;
+      border: 2px solid rgba(212, 175, 55, 0.5);
+      border-radius: 14px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      font-family: 'Cinzel', serif;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow:
+        0 4px 15px rgba(212, 175, 55, 0.3),
+        0 0 30px rgba(212, 175, 55, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow:
+        0 6px 20px rgba(212, 175, 55, 0.4),
+        0 0 40px rgba(212, 175, 55, 0.2);
+    }
+
+    button:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+
+    button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.4),
+        transparent
+      );
+      transition: left 0.6s;
+    }
+
+    button:hover::before {
+      left: 100%;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      filter: grayscale(0.5);
+    }
+
+    .reading-area { display: none; }
+
+    .reading-area.active { display: block; }
+
+    .cards-container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    /* Different layouts for different spreads */
+    .cards-container.spread-1 {
+      justify-content: center;
+    }
+
+    .cards-container.spread-3 {
+      justify-content: space-around;
+    }
+
+    .cards-container.spread-7 {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      max-width: 600px;
+      margin: 20px auto;
+    }
+
+    .spread-7-row {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+
+    .spread-7-row.three-cards {
+      /* 3 cards per row */
+    }
+
+    .spread-7-row.single-card {
+      /* 1 card centered */
+    }
+
+    /* Smaller cards for 7-card spread - fit on mobile */
+    .spread-7-row .card-slot {
+      padding: 8px;
+      min-width: 0;
+      flex: 1;
+      max-width: 100px;
+    }
+
+    .spread-7-row .card-slot .card-image {
+      width: 60px;
+      height: 100px;
+      max-width: 100%;
+    }
+
+    .spread-7-row .card-slot .position {
+      font-size: 0.55rem;
+    }
+
+    .spread-7-row .card-slot .card-name {
+      font-size: 0.6rem;
+    }
+
+    .spread-7-row .card-slot .card-back {
+      width: 60px;
+      height: 100px;
+    }
+
+    .spread-7-row .card-slot .card-back-symbol {
+      font-size: 1.5rem;
+    }
+
+    .spread-7-row .card-slot .card-back-text {
+      font-size: 0.5rem;
+    }
+
+    /* Corner ornaments */
+    .card-slot::before {
+      content: '🔮';
+      position: absolute;
+      top: 6px;
+      left: 8px;
+      font-size: 11px;
+      opacity: 0.7;
+    }
+
+    .card-slot::after {
+      content: '✨';
+      position: absolute;
+      bottom: 6px;
+      right: 8px;
+      font-size: 11px;
+      opacity: 0.7;
+    }
+
+    .card-slot .position {
+      font-family: 'Cinzel', serif;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: #d4af37;
+      margin-bottom: 12px;
+      letter-spacing: 1.5px;
+      font-weight: 600;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-slot .card-image {
+      width: 105px;
+      height: 180px;
+      object-fit: contain;
+      margin: 12px auto;
+      border-radius: 10px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+      background: rgba(0,0,0,0.3);
+      transition: all 0.4s ease-out;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Card Back Design (harlequin diamond pattern - navy & gold) */
+    .card-back {
+      width: 105px;
+      height: 180px;
+      margin: 12px auto;
+      border-radius: 10px;
+      border: 3px solid #d4af37;
+      background:
+        /* Gold diamond pattern overlay */
+        repeating-linear-gradient(
+          45deg,
+          transparent,
+          transparent 10px,
+          rgba(212, 175, 55, 0.15) 10px,
+          rgba(212, 175, 55, 0.15) 20px
+        ),
+        repeating-linear-gradient(
+          -45deg,
+          transparent,
+          transparent 10px,
+          rgba(212, 175, 55, 0.15) 10px,
+          rgba(212, 175, 55, 0.15) 20px
+        ),
+        /* Deep navy blue background */
+        linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 50%, #0d0d2b 100%);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Harlequin diamond border overlay */
+    .card-back::before {
+      content: '';
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      right: 6px;
+      bottom: 6px;
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      border-radius: 6px;
+      pointer-events: none;
+    }
+
+    /* Gold diamond corner accents */
+    .card-back::after {
+      content: '✦';
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      font-size: 14px;
+      color: #d4af37;
+      opacity: 0.7;
+      text-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
+    }
+
+    .card-back-symbol {
+      font-size: 32px;
+      color: #d4af37;
+      text-shadow:
+        0 0 12px rgba(212, 175, 55, 0.9),
+        0 0 24px rgba(147, 51, 234, 0.7);
+      animation: cardBackGlow 2.5s ease-in-out infinite;
+      position: relative;
+      z-index: 2;
+    }
+
+    @keyframes cardBackGlow {
+      0%, 100% {
+        transform: scale(1);
+        filter: brightness(1);
+        text-shadow:
+          0 0 12px rgba(212, 175, 55, 0.9),
+          0 0 24px rgba(147, 51, 234, 0.7);
+      }
+      50% {
+        transform: scale(1.08);
+        filter: brightness(1.2);
+        text-shadow:
+          0 0 18px rgba(212, 175, 55, 1),
+          0 0 36px rgba(147, 51, 234, 0.9);
+      }
+    }
+
+    .card-back-text {
+      font-family: 'Cinzel', serif;
+      font-size: 6px;
+      color: #d4af37;
+      letter-spacing: 1.5px;
+      margin-top: 4px;
+      opacity: 0.7;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+      position: relative;
+      z-index: 2;
+    }
+
+    .card-slot .card-image.revealed {
+      animation: mysticalReveal 0.8s ease-out forwards;
+    }
+
+    @keyframes mysticalReveal {
+      0% {
+        transform: rotateY(90deg) scale(0.8);
+        opacity: 0;
+        filter: blur(10px);
+      }
+      50% {
+        filter: blur(5px);
+      }
+      100% {
+        transform: rotateY(0deg) scale(1);
+        opacity: 1;
+        filter: blur(0);
+      }
+    }
+
+    .card-slot .card-name {
+      font-family: 'Cinzel', serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-top: 12px;
+      margin-bottom: 6px;
+      color: #d4af37;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-slot .orientation {
+      font-size: 0.65rem;
+      opacity: 0.75;
+      font-style: italic;
+      font-weight: 500;
+      position: relative;
+      z-index: 1;
+    }
+
+    .reading-text {
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.15) 0%, rgba(147, 51, 234, 0.08) 100%);
+      border-radius: 16px;
+      padding: 24px;
+      margin-top: 20px;
+      line-height: 1.7;
+      font-size: 0.95rem;
+      border-left: 4px solid #d4af37;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .reading-text strong {
+      color: #d4af37;
+    }
+
+    .reading-text .card-interpretation {
+      margin: 18px 0;
+      padding: 16px;
+      background: linear-gradient(135deg, rgba(212,175,55,0.12) 0%, rgba(212,175,55,0.05) 100%);
+      border-radius: 12px;
+      border-left: 4px solid #d4af37;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .reading-text .synthesis {
+      margin-top: 24px;
+      padding: 20px;
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.25) 0%, rgba(147, 51, 234, 0.15) 100%);
+      border-radius: 16px;
+      border: 2px solid rgba(212, 175, 55, 0.3);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    }
+
+    .loading {
+      text-align: center;
+      padding: 50px 20px;
+      display: none;
+      position: relative;
+      z-index: 1;
+    }
+
+    .loading.active { display: block; }
+
+    /* Mystical Crystal Ball Loading */
+    .crystal-ball {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: radial-gradient(
+        circle at 30% 30%,
+        rgba(255, 255, 255, 0.9),
+        rgba(147, 51, 234, 0.6),
+        rgba(79, 70, 229, 0.8)
+      );
+      box-shadow:
+        0 0 40px rgba(147, 51, 234, 0.7),
+        0 0 80px rgba(147, 51, 234, 0.4),
+        inset 0 0 30px rgba(255, 255, 255, 0.3);
+      animation: crystalPulse 2.5s ease-in-out infinite;
+      margin: 0 auto 25px;
+      position: relative;
+    }
+
+    .crystal-ball::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 120%;
+      height: 120%;
+      border-radius: 50%;
+      background: radial-gradient(
+        circle,
+        rgba(147, 51, 234, 0.3),
+        transparent 70%
+      );
+      animation: crystalGlow 2.5s ease-in-out infinite;
+    }
+
+    @keyframes crystalPulse {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow:
+          0 0 40px rgba(147, 51, 234, 0.7),
+          0 0 80px rgba(147, 51, 234, 0.4);
+      }
+      50% {
+        transform: scale(1.08);
+        box-shadow:
+          0 0 60px rgba(147, 51, 234, 0.9),
+          0 0 120px rgba(147, 51, 234, 0.5);
+      }
+    }
+
+    @keyframes crystalGlow {
+      0%, 100% {
+        opacity: 0.5;
+        transform: translate(-50%, -50%) scale(1);
+      }
+      50% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.15);
+      }
+    }
+
+    .loading-text {
+      font-family: 'Cinzel', serif;
+      color: #d4af37;
+      font-size: 1.1rem;
+      letter-spacing: 2px;
+      animation: textFadePulse 1.8s ease-in-out infinite;
+      text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+    }
+
+    @keyframes textFadePulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    .loading-subtext {
+      margin-top: 10px;
+      opacity: 0.7;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .error {
+      background: rgba(255,100,100,0.1);
+      border: 1px solid rgba(255,100,100,0.3);
+      color: #ffaaaa;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+      display: none;
+    }
+
+    .error.active { display: block; }
+
+    /* Spread info box */
+    .spread-info {
+      background: linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(79, 70, 229, 0.08) 100%);
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-left: 3px solid #d4af37;
+      font-size: 0.9rem;
+    }
+
+    .spread-info h3 {
+      color: #d4af37;
+      font-family: 'Cinzel', serif;
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+
+    .spread-info p {
+      opacity: 0.85;
+      line-height: 1.5;
+    }
+
+    /* Container z-index to stay above stars */
+    .container {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Navigation Tabs */
+    .nav-tabs {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 20px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 12px;
+      padding: 5px;
+    }
+
+    .nav-tab {
+      flex: 1;
+      padding: 12px 15px;
+      background: transparent;
+      border: none;
+      color: rgba(255,255,255,0.6);
+      font-family: 'Quicksand', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .nav-tab.active {
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(212, 175, 55, 0.05) 100%);
+      color: #d4af37;
+    }
+
+    .nav-tab:hover:not(.active) {
+      color: rgba(255,255,255,0.9);
+      background: rgba(255,255,255,0.05);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Daily Card Section */
+    .daily-card {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .daily-card-display {
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%);
+      border-radius: 16px;
+      padding: 25px;
+      margin: 20px 0;
+      border: 2px solid rgba(212, 175, 55, 0.3);
+    }
+
+    .daily-card-image {
+      width: 120px;
+      height: 200px;
+      margin: 0 auto 15px;
+      border-radius: 10px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    }
+
+    .daily-card-name {
+      font-family: 'Cinzel', serif;
+      font-size: 1.3rem;
+      color: #d4af37;
+      margin-bottom: 10px;
+    }
+
+    .daily-card-meaning {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      opacity: 0.9;
+    }
+
+    .daily-timestamp {
+      font-size: 0.8rem;
+      opacity: 0.6;
+      margin-top: 15px;
+    }
+
+    /* Encyclopedia Section */
+    .encyclopedia {
+      padding: 10px 0;
+    }
+
+    .encyclopedia-search {
+      margin-bottom: 20px;
+    }
+
+    .encyclopedia-search input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      background: rgba(15, 12, 41, 0.6);
+      color: #eee;
+      font-size: 1rem;
+      font-family: 'Quicksand', sans-serif;
+    }
+
+    .encyclopedia-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .encyclopedia-card {
+      background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(212, 175, 55, 0.2);
+    }
+
+    .encyclopedia-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(212, 175, 55, 0.5);
+      box-shadow: 0 5px 20px rgba(212, 175, 55, 0.2);
+    }
+
+    .encyclopedia-card img {
+      width: 60px;
+      height: 100px;
+      object-fit: contain;
+      margin-bottom: 8px;
+      border-radius: 6px;
+    }
+
+    .encyclopedia-card .card-title {
+      font-family: 'Cinzel', serif;
+      font-size: 0.7rem;
+      color: #d4af37;
+    }
+
+    /* Card Detail Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.85);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: linear-gradient(180deg, #1a1a3e 0%, #0d0d2b 100%);
+      border-radius: 20px;
+      padding: 30px;
+      padding-top: 50px;
+      max-width: 400px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      border: 2px solid rgba(212, 175, 55, 0.3);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: #d4af37;
+      font-size: 1.8rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      opacity: 0.8;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .modal-close:hover {
+      opacity: 1;
+      background: rgba(255,255,255,0.2);
+    }
+
+    /* Outcome button selected state */
+    .outcome-btn.selected {
+      transform: scale(1.05);
+    }
+    .outcome-btn[data-outcome="good"].selected {
+      border-color: #4caf50 !important;
+      box-shadow: 0 0 20px rgba(76,175,80,0.3);
+      background: rgba(76,175,80,0.2);
+    }
+    .outcome-btn[data-outcome="neutral"].selected {
+      border-color: #ff9800 !important;
+      box-shadow: 0 0 20px rgba(255,152,0,0.3);
+      background: rgba(255,152,0,0.2);
+    }
+    .outcome-btn[data-outcome="bad"].selected {
+      border-color: #f44336 !important;
+      box-shadow: 0 0 20px rgba(244,67,54,0.3);
+      background: rgba(244,67,54,0.2);
+    }
+
+    .modal-card-image {
+      width: 150px;
+      height: 250px;
+      margin: 0 auto 20px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .modal-card-name {
+      font-family: 'Cinzel', serif;
+      font-size: 1.5rem;
+      color: #d4af37;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .modal-section {
+      margin-bottom: 20px;
+    }
+
+    .modal-section h4 {
+      color: #d4af37;
+      font-family: 'Cinzel', serif;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .modal-section p {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      opacity: 0.9;
+    }
+
+    /* History Section */
+    .history-list {
+      max-height: 500px;
+      overflow-y: auto;
+    }
+
+    .history-item {
+      background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 12px;
+      border-left: 3px solid #d4af37;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .history-item:hover {
+      transform: translateX(5px);
+      background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 100%);
+    }
+
+    .history-date {
+      font-size: 0.8rem;
+      color: #d4af37;
+      margin-bottom: 5px;
+    }
+
+    .history-question {
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .history-cards {
+      font-size: 0.85rem;
+      opacity: 0.8;
+    }
+
+    .history-empty {
+      text-align: center;
+      padding: 40px 20px;
+      opacity: 0.6;
+    }
+
+    .history-empty-icon {
+      font-size: 3rem;
+      margin-bottom: 15px;
+    }
+
+    .clear-history-btn {
+      background: rgba(255,100,100,0.1);
+      border: 1px solid rgba(255,100,100,0.3);
+      color: #ffaaaa;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Quicksand', sans-serif;
+      font-size: 0.9rem;
+      margin-top: 15px;
+      transition: all 0.3s ease;
+    }
+
+    .clear-history-btn:hover {
+      background: rgba(255,100,100,0.2);
+    }
+  </style>
+</head>
+<body>
+  <!-- Animated Starfield -->
+  <div class="stars" id="stars"></div>
+
+  <div class="container">
+    <h1>🔮 Decision Tarot</h1>
+    <p class="subtitle">Clarity at Life's Crossroads</p>
+
+    <!-- Navigation Tabs -->
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="switchTab('reading')">Draw</button>
+      <button class="nav-tab" onclick="switchTab('daily')">Daily Card</button>
+      <button class="nav-tab" onclick="switchTab('encyclopedia')">Cards</button>
+      <button class="nav-tab" onclick="switchTab('history')">Past</button>
+      <button class="nav-tab" onclick="switchTab('dashboard')">Dashboard</button>
+    </div>
+
+    <!-- Reading Tab -->
+    <div class="tab-content active" id="tab-reading">
+      <!-- Question Form -->
+      <div class="card" id="question-form">
+        <!-- Spread Selector -->
+        <label>Choose Your Spread</label>
+        <div class="spread-selector">
+          <button class="spread-btn active" data-spread="1" onclick="selectSpread(1)">
+            <span class="spread-name">Single Card</span>
+            <span class="spread-cards">Quick Guidance</span>
+          </button>
+          <button class="spread-btn" data-spread="3" onclick="selectSpread(3)">
+            <span class="spread-name">3-Card Spread</span>
+            <span class="spread-cards">Decision Clarity</span>
+          </button>
+          <button class="spread-btn" data-spread="7" onclick="selectSpread(7)">
+            <span class="spread-name">Celtic Cross</span>
+            <span class="spread-cards">Deep Dive</span>
+          </button>
+        </div>
+
+        <!-- Spread Info -->
+        <div class="spread-info" id="spread-info">
+          <h3>Three-Card Spread</h3>
+          <p>Perfect for understanding a decision. The cards represent: <strong>The Situation</strong>, <strong>The Choice</strong>, and <strong>The Outcome</strong>.</p>
+        </div>
+
+        <label for="decision-type">What decision are you facing?</label>
+        <select id="decision-type">
+          <option value="">Choose a category...</option>
+          <option value="career">Career / Work</option>
+          <option value="relationship">Relationship / Love</option>
+          <option value="lifepath">Life Path / Big Change</option>
+          <option value="money">Money / Finances</option>
+          <option value="health">Health / Wellness</option>
+          <option value="custom">Other / Custom</option>
+        </select>
+
+        <div id="custom-question" style="display:none; margin-top: 15px;">
+          <label for="custom-text">Your specific question:</label>
+          <textarea id="custom-text" placeholder="e.g., Should I take the new job offer?"></textarea>
+        </div>
+
+        <label for="name" style="margin-top: 15px;">Your name (optional):</label>
+        <input type="text" id="name" placeholder="So we can make it personal">
+
+        <button onclick="drawCards()" style="margin-top: 20px;" id="draw-btn">
+          Draw Your Cards
+        </button>
+
+        <div class="error" id="error-msg"></div>
+      </div>
+
+      <!-- Loading -->
+      <div class="loading" id="loading">
+        <div class="crystal-ball"></div>
+        <p class="loading-text">Consulting the cards...</p>
+        <p class="loading-subtext">Shuffling the mystical deck</p>
+      </div>
+
+      <!-- Reading Display -->
+      <div class="reading-area" id="reading-area">
+        <div class="card">
+          <h2 style="color: #d4af37; margin-bottom: 10px;" id="reading-title">Your Reading</h2>
+          <p id="reading-header" style="opacity: 0.8; margin-bottom: 15px;"></p>
+
+          <div class="cards-container" id="cards-container">
+            <!-- Cards will be dynamically inserted here -->
+          </div>
+
+          <div class="reading-text" id="ai-reading">
+            <p style="opacity: 0.7; font-style: italic;">Interpretation loading...</p>
+          </div>
+
+          <button onclick="resetReading()" style="margin-top: 20px; background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%); color: #eee; border-color: rgba(255,255,255,0.3);">
+            Start New Reading
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Daily Card Tab -->
+    <div class="tab-content" id="tab-daily">
+      <div class="card">
+        <h2 style="color: #d4af37; margin-bottom: 5px;">Today's Card</h2>
+        <p style="opacity: 0.7; margin-bottom: 20px; font-size: 0.9rem;">Your free daily guidance</p>
+
+        <div class="daily-card" id="daily-card-container">
+          <div class="crystal-ball" style="width: 60px; height: 60px; margin: 20px auto;"></div>
+          <p class="loading-text" style="font-size: 0.9rem;">Drawing your card...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Encyclopedia Tab -->
+    <div class="tab-content" id="tab-encyclopedia">
+      <div class="card encyclopedia">
+        <h2 style="color: #d4af37; margin-bottom: 5px;">Card Encyclopedia</h2>
+        <p style="opacity: 0.7; margin-bottom: 20px; font-size: 0.9rem;">Explore all 78 cards</p>
+
+        <div class="encyclopedia-search">
+          <input type="text" id="encyclopedia-search" placeholder="Search cards..." oninput="filterEncyclopedia()">
+        </div>
+
+        <div class="encyclopedia-grid" id="encyclopedia-grid">
+          <!-- Cards loaded dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <!-- History Tab -->
+    <div class="tab-content" id="tab-history">
+      <div class="card">
+        <h2 style="color: #d4af37; margin-bottom: 5px;">Reading History</h2>
+        <p style="opacity: 0.7; margin-bottom: 20px; font-size: 0.9rem;">Your past readings</p>
+
+        <div class="history-list" id="history-list">
+          <!-- History loaded dynamically -->
+        </div>
+
+        <button class="clear-history-btn" onclick="clearHistory()">Clear History</button>
+    </div>
+   </div>
+
+    <div class="tab-content" id="tab-dashboard">
+     <div class="card">
+      <h2 style="color: #d4af37; margin-bottom: 5px;">Decision Dashboard</h2>
+      <p style="opacity: 0.7; margin-bottom: 20px; font-size: 0.9rem;">Track your decision outcomes over time</p>
+      <div id="dashboard-stats">
+       <!-- Loaded dynamically -->
+      </div>
+      <div id="dashboard-chart">
+       <!-- Chart loaded dynamically -->
+      </div>
+     </div>
+    </div>
+  </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card Detail Modal -->
+  <div class="modal-overlay" id="card-modal" onclick="closeModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+      <img class="modal-card-image" id="modal-image" src="" alt="">
+      <h3 class="modal-card-name" id="modal-name"></h3>
+      <div class="modal-section">
+        <h4>Upright Meaning</h4>
+        <p id="modal-upright"></p>
+      </div>
+      <div class="modal-section">
+        <h4>Reversed Meaning</h4>
+        <p id="modal-reversed"></p>
+      </div>
+      <div class="modal-section">
+        <h4>Keywords</h4>
+        <p id="modal-keywords"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Outcome Tracking Modal -->
+  <div class="modal-overlay" id="outcome-modal" onclick="closeOutcomeModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()" style="display:none;">
+      <button class="modal-close" onclick="document.getElementById('outcome-modal').classList.remove('active')">&times;</button>
+      <h3 style="color:#d4af37;margin-bottom:15px;">🔮 Track Decision Outcome</h3>
+      <div style="margin-bottom:15px;font-size:0.9rem;opacity:0.8;">
+        <span id="outcome-modal-date"></span> &mdash; <span id="outcome-modal-question"></span>
+      </div>
+      <input type="hidden" id="outcome-modal-index" value="">
+      <div style="margin-bottom:15px;">
+        <label style="color:#d4af37;font-size:0.9rem;display:block;margin-bottom:8px;">How did this decision turn out?</label>
+        <div style="display:flex;gap:10px;">
+          <button class="outcome-btn" data-outcome="good" onclick="selectOutcome('good')" style="flex:1;padding:16px;border:2px solid rgba(255,255,255,0.15);border-radius:12px;background:rgba(76,175,80,0.1);color:#4caf50;font-size:2rem;cursor:pointer;transition:all 0.3s;">
+            <div style="font-size:1rem;margin-top:4px;">Good</div>
+          </button>
+          <button class="outcome-btn" data-outcome="neutral" onclick="selectOutcome('neutral')" style="flex:1;padding:16px;border:2px solid rgba(255,255,255,0.15);border-radius:12px;background:rgba(255,152,0,0.1);color:#ff9800;font-size:2rem;cursor:pointer;transition:all 0.3s;">
+            <div style="font-size:1rem;margin-top:4px;">Neutral</div>
+          </button>
+          <button class="outcome-btn" data-outcome="bad" onclick="selectOutcome('bad')" style="flex:1;padding:16px;border:2px solid rgba(255,255,255,0.15);border-radius:12px;background:rgba(244,67,54,0.1);color:#f44336;font-size:2rem;cursor:pointer;transition:all 0.3s;">
+            <div style="font-size:1rem;margin-top:4px;">Bad</div>
+          </button>
+        </div>
+      </div>
+      <div style="margin-bottom:15px;">
+        <label for="outcome-notes" style="color:#d4af37;font-size:0.9rem;display:block;margin-bottom:8px;">Notes (optional)</label>
+        <textarea id="outcome-notes" style="width:100%;padding:12px;border-radius:10px;border:1px solid rgba(212,175,55,0.3);background:rgba(15,12,41,0.6);color:#eee;font-family:'Quicksand',sans-serif;resize:vertical;min-height:60px;" placeholder="Any reflections on how this turned out?"></textarea>
+      </div>
+      <button onclick="saveOutcome()" style="width:100%;padding:14px;background:linear-gradient(135deg,#d4af37,#c5a028);border:none;border-radius:10px;color:#0f0c29;font-size:1rem;font-weight:700;cursor:pointer;font-family:'Cinzel',serif;">Save Outcome</button>
+    </div>
+  </div>
+
+  <script>
+    // Sound Effects - Load at top of script section
+    const flipSound = new Audio('sounds/card-flip.mp3');
+    const shuffleSound = new Audio('sounds/card-shuffle.mp3');
+
+    // ========== GOOGLE PLAY BILLING via RevenueCat Capacitor Plugin ==========
+    // This uses @revenuecat/purchases-capacitor which wraps Google Play Billing
+    // (15% Play Store fee applies — fully compliant with Play Store policies)
+
+    let isPremium = localStorage.getItem('premium_unlocked') === 'true';
+    let revenuecatInitialized = false;
+
+    // RevenueCat API Key for Google Play (NOT the web SDK)
+    const REVENUECAT_API_KEY = 'goog_pfkOiYhnnEgDTPgSChROlrVFSpg';
+
+    // Product identifiers — both tiers unlock the same premium access
+    const PRODUCTS = {
+      monthly: {
+        id: 'tarot_monthly',
+        price: '$9.99',
+        period: '/mo',
+        entitlement: 'premium',
+        label: 'Monthly',
+        badge: '$9.99/mo'
+      },
+      yearly: {
+        id: 'tarot_yearly',
+        price: '$79.99',
+        period: '/yr',
+        entitlement: 'premium',
+        label: 'Yearly',
+        badge: '$79.99/yr'
+      }
+    };
+
+    // Helper: wrap promises with timeout
+    async function withTimeout(promise, ms = 15000) {
+      const timeout = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Native bridge timeout')), ms)
+      );
+      return Promise.race([promise, timeout]);
+    }
+
+    // Wait for Capacitor to be ready
+    function waitForCapacitor() {
+      return new Promise((resolve) => {
+        if (window.Capacitor && window.Capacitor.Plugins) {
+          resolve();
+        } else {
+          const checkInterval = setInterval(() => {
+            if (window.Capacitor && window.Capacitor.Plugins) {
+              clearInterval(checkInterval);
+              resolve();
+            }
+          }, 100);
+          setTimeout(() => {
+            clearInterval(checkInterval);
+            resolve();
+          }, 5000);
+        }
+      });
+    }
+
+    // Initialize RevenueCat Capacitor plugin
+    async function initRevenueCat() {
+      if (revenuecatInitialized) return;
+      try {
+        await waitForCapacitor();
+        const Purchases = window.Capacitor.Plugins.Purchases;
+        if (!Purchases) throw new Error('Purchases plugin not found');
+        await Purchases.configure({ apiKey: REVENUECAT_API_KEY });
+        revenuecatInitialized = true;
+        console.log('✅ RevenueCat Capacitor plugin initialized (Google Play Billing)');
+      } catch (error) {
+        console.error('RevenueCat init failed:', error);
+      }
+    }
+
+    // Check entitlements from RevenueCat
+    async function refreshEntitlements() {
+      try {
+        const Purchases = window.Capacitor.Plugins.Purchases;
+        if (!Purchases || !revenuecatInitialized) return false;
+
+        const info = await withTimeout(Purchases.getCustomerInfo());
+        const active = info?.customerInfo?.entitlements?.active || info?.entitlements?.active || {};
+        
+        isPremium = !!active['premium'];
+
+        if (isPremium) {
+          localStorage.setItem('premium_unlocked', 'true');
+          localStorage.setItem('premium_tier', 'premium');
+        }
+        return isPremium;
+      } catch (err) {
+        console.log('RevenueCat entitlement check failed:', err.message);
+        return isPremium;
+      }
+    }
+
+    // Initialize + check on load
+    initRevenueCat().then(() => refreshEntitlements());
+
+    // Purchase a specific product/package
+    async function purchaseProduct(productId) {
+      try {
+        const Purchases = window.Capacitor.Plugins.Purchases;
+        if (!Purchases) {
+          alert('Purchase system not available.');
+          return false;
+        }
+
+        const offerings = await withTimeout(Purchases.getOfferings());
+        const current = offerings?.current?.offerings?.[0] || offerings?.current;
+        
+        if (!current?.availablePackages?.length) {
+          alert('Products not available. Check your Google Play and RevenueCat configuration.');
+          return false;
+        }
+
+        // Find the matching package
+        const pkg = current.availablePackages.find(p => p.identifier === productId);
+        if (!pkg) {
+          alert(`Product "${productId}" not found in offerings.`);
+          return false;
+        }
+
+        await withTimeout(Purchases.purchasePackage({ aPackage: pkg }));
+        
+        // Refresh entitlements after purchase
+        await refreshEntitlements();
+        return isPremium;
+      } catch (err) {
+        console.error('Purchase error:', err);
+        if (err.code !== 'PURCHASE_CANCELLED_ERROR') {
+          alert('Purchase failed: ' + (err.message || err.code || 'Unknown error'));
+        }
+        return false;
+      }
+    }
+
+    // Show paywall modal — 2 tiers: monthly + yearly
+    function showPaywall(source = 'daily_limit') {
+      const existing = document.getElementById('paywall-modal');
+      if (existing) existing.remove();
+
+      const modal = document.createElement('div');
+      modal.id = 'paywall-modal';
+      modal.innerHTML = `
+        <div style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;z-index:1000;overflow-y:auto;padding:20px;"
+          onclick="if(event.target===this)document.getElementById('paywall-modal').remove()">
+          <div style="background:linear-gradient(135deg, #1a1a2e, #16213e);border-radius:20px;padding:30px;max-width:400px;width:100%;text-align:center;border:2px solid #d4af37;margin:auto;"
+            onclick="event.stopPropagation()">
+            
+            <div style="font-size:3em;margin-bottom:10px;">🔮</div>
+            <h2 style="color:#d4af37;margin-bottom:4px;font-size:1.5em;">Unlock Full Access</h2>
+            <p style="color:#aaa;margin-bottom:20px;font-size:0.85em;">Get unlimited readings, all spreads, AI insights, reading history, and more</p>
+
+            <!-- Monthly option -->
+            <div style="background:rgba(212,175,55,0.08);border:2px solid #d4af37;border-radius:14px;padding:20px 18px;margin-bottom:12px;cursor:pointer;" onclick="initiatePaywallPurchase('monthly')">
+              <div style="font-size:2.2em;font-weight:700;color:#d4af37;">$9.99</div>
+              <div style="font-size:0.85em;color:#aaa;margin-top:4px;">per month • cancel anytime</div>
+              <div style="margin-top:10px;text-align:left;display:inline-block;">
+                <div style="color:#ccc;font-size:0.85em;margin:3px 0;">✓ Unlimited daily readings</div>
+                <div style="color:#ccc;font-size:0.85em;margin:3px 0;">✓ All spreads (1, 3, 7-card)</div>
+                <div style="color:#ccc;font-size:0.85em;margin:3px 0;">✓ AI-powered interpretations</div>
+                <div style="color:#ccc;font-size:0.85em;margin:3px 0;">✓ Reading history & journal</div>
+              </div>
+            </div>
+
+            <!-- Yearly option (highlighted) -->
+            <div style="background:linear-gradient(135deg, rgba(212,175,55,0.15) 0%, rgba(212,175,55,0.05) 100%);border:2px solid #d4af37;border-radius:14px;padding:20px 18px;margin-bottom:20px;cursor:pointer;position:relative;" onclick="initiatePaywallPurchase('yearly')">
+              <div style="position:absolute;top:-10px;right:10px;background:#d4af37;color:#0f0c29;font-size:0.65em;font-weight:700;padding:4px 12px;border-radius:20px;">BEST VALUE</div>
+              <div style="font-size:2.2em;font-weight:700;color:#d4af37;">$79.99</div>
+              <div style="font-size:0.85em;color:#aaa;margin-top:4px;">per year • save 33%</div>
+              <div style="margin-top:10px;text-align:left;display:inline-block;">
+                <div style="color:#ccc;font-size:0.85em;margin:3px 0;">✓ Everything in monthly</div>
+                <div style="color:#ccc;font-size:0.85em;margin:3px 0;">✓ Just $6.67/month</div>
+              </div>
+            </div>
+
+            <button onclick="document.getElementById('paywall-modal').remove()" style="width:100%;padding:12px;background:transparent;border:1px solid #d4af37;border-radius:10px;color:#d4af37;cursor:pointer;font-size:0.9em;">Maybe Later</button>
+            
+            <p style="font-size:0.7em;color:#666;margin-top:12px;">
+              Secure via Google Play Billing • Cancel anytime
+            </p>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    function initiatePaywallPurchase(tier = 'monthly') {
+      const productId = tier === 'yearly' ? PRODUCTS.yearly.id : PRODUCTS.monthly.id;
+      const price = tier === 'yearly' ? PRODUCTS.yearly.badge : PRODUCTS.monthly.badge;
+
+      const modalContent = document.querySelector('#paywall-modal div[style*="max-width:400px"]');
+      if (modalContent) {
+        const originalContent = modalContent.innerHTML;
+        modalContent.innerHTML = `
+          <div style="text-align:center;padding:20px;">
+            <div style="font-size:2em;margin-bottom:10px;">🔮</div>
+            <p style="color:#d4af37;font-size:1em;">Processing your purchase...</p>
+            <p style="color:#aaa;font-size:0.8em;margin-top:8px;">${price}</p>
+          </div>
+        `;
+      }
+
+      (async () => {
+        try {
+          if (!revenuecatInitialized) {
+            await initRevenueCat();
+          }
+          const success = await purchaseProduct(productId);
+          if (success) {
+            document.getElementById('paywall-modal').remove();
+            alert('🎉 Thank you! Your premium features are now unlocked.');
+          }
+        } catch (err) {
+          console.error('Purchase flow error:', err);
+        }
+      })();
+    }
+
+    // Daily draw limit for free users
+    function getDailyDrawCount() {
+      const today = new Date().toDateString();
+      const stored = localStorage.getItem('dailyDraws');
+      if (!stored) return 0;
+      const data = JSON.parse(stored);
+      return data.date === today ? data.count : 0;
+    }
+
+    function incrementDailyDraw() {
+      const today = new Date().toDateString();
+      const stored = localStorage.getItem('dailyDraws');
+      let count = 1;
+      if (stored) {
+        const data = JSON.parse(stored);
+        if (data.date === today) count = data.count + 1;
+      }
+      localStorage.setItem('dailyDraws', JSON.stringify({ date: today, count }));
+      return count;
+    }
+
+    // Robust fetch wrapper with retry logic and exponential backoff
+    async function fetchWithRetry(url, options = {}, retries = 2, backoff = 1000) {
+      try {
+        const response = await fetch(url, options);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+      } catch (err) {
+        if (retries > 0) {
+          const errorEl = document.getElementById('error-msg');
+          if (errorEl) {
+            errorEl.textContent = `Unable to connect to server, retrying... (${retries} attempts left)`;
+            errorEl.classList.add('active');
+          }
+
+          await new Promise(resolve => setTimeout(resolve, backoff));
+          return fetchWithRetry(url, options, retries - 1, backoff);
+        }
+        throw err;
+      }
+    }
+    let currentSpread = 1;
+
+    // Spread definitions
+    const SPREADS = {
+      1: {
+        name: 'Single Card',
+        positions: [
+          { name: 'Your Guidance', guide: 'The message for you right now' }
+        ],
+        description: 'A single card drawn for quick guidance. Perfect for daily reflection or a simple yes/no question.'
+      },
+      3: {
+        name: 'Three-Card Spread',
+        positions: [
+          { name: 'The Situation', guide: 'Where you are right now' },
+          { name: 'The Choice', guide: 'The decision before you' },
+          { name: 'The Outcome', guide: 'Where this path leads' }
+        ],
+        description: 'Perfect for understanding a decision. The cards represent: The Situation, The Choice, and The Outcome.'
+      },
+      7: {
+        name: 'Celtic Cross',
+        positions: [
+          { name: 'Present', guide: 'Your current situation' },
+          { name: 'Challenge', guide: 'The obstacle you face' },
+          { name: 'Goal', guide: 'Your conscious aim' },
+          { name: 'Foundation', guide: 'Root of the matter' },
+          { name: 'Past', guide: 'Recent influences' },
+          { name: 'Future', guide: 'What lies ahead' },
+          { name: 'Outcome', guide: 'Final resolution' }
+        ],
+        description: 'A powerful spread for deep insight. Explores your present situation, challenges, goals, influences, and potential outcomes.'
+      }
+    };
+
+    // Generate animated starfield background
+    function createStars() {
+      const starsContainer = document.getElementById('stars');
+      const starCount = 60;
+
+      for (let i = 0; i < starCount; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        const size = Math.random() * 2 + 1;
+        star.style.width = size + 'px';
+        star.style.height = size + 'px';
+        star.style.animationDelay = (Math.random() * 2) + 's';
+        starsContainer.appendChild(star);
+      }
+    }
+
+    createStars();
+
+    // Select spread type
+    function selectSpread(num) {
+      // Premium gate: 3-card and 7-card spreads require premium
+      if (!isPremium && num > 1) {
+        showPaywall();
+        return;
+      }
+      currentSpread = num;
+
+      // Play shuffle sound
+      shuffleSound.play().catch(() => {});
+
+      // Update button states
+      document.querySelectorAll('.spread-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (parseInt(btn.dataset.spread) === num) {
+          btn.classList.add('active');
+        }
+      });
+
+      // Update info box
+      const spread = SPREADS[num];
+      document.getElementById('spread-info').innerHTML = `
+        <h3>${spread.name}</h3>
+        <p>${spread.description}</p>
+      `;
+    }
+
+    const API_BASE = 'https://tarotapi.dev/api/v1';
+
+    // Map API card names to image filenames
+    function getImageFilename(card) {
+      const nameShort = card.name_short;
+
+      // Major Arcana
+      if (card.type === 'major') {
+        const majorNames = {
+          'ar00': 'fool', 'ar01': 'magician', 'ar02': 'priestess',
+          'ar03': 'empress', 'ar04': 'emperor', 'ar05': 'hierophant',
+          'ar06': 'lovers', 'ar07': 'chariot', 'ar08': 'strength',
+          'ar09': 'hermit', 'ar10': 'fortune', 'ar11': 'justice',
+          'ar12': 'hanged', 'ar13': 'death', 'ar14': 'temperance',
+          'ar15': 'devil', 'ar16': 'tower', 'ar17': 'star',
+          'ar18': 'moon', 'ar19': 'sun', 'ar20': 'judgement',
+          'ar21': 'world'
+        };
+        const name = majorNames[nameShort];
+        return name ? `major_arcana_${name}.jpg` : null;
+      }
+
+      // Minor Arcana
+      if (card.type === 'minor') {
+        const suitMap = {
+          'cups': 'cups', 'swords': 'swords',
+          'wands': 'wands', 'pentacles': 'pentacles'
+        };
+
+        const valueMap = {
+          'ace': 'ace', 'two': '2', '2': '2', 'three': '3', '3': '3',
+          'four': '4', '4': '4', 'five': '5', '5': '5', 'six': '6', '6': '6',
+          'seven': '7', '7': '7', 'eight': '8', '8': '8', 'nine': '9', '9': '9',
+          'ten': '10', '10': '10', 'page': 'page', 'knight': 'knight',
+          'queen': 'queen', 'king': 'king'
+        };
+
+        const suit = suitMap[card.suit];
+        const value = valueMap[card.value];
+
+        if (suit && value) {
+          return `minor_arcana_${suit}_${value}.jpg`;
+        }
+      }
+
+      return null;
+    }
+
+    // Show custom question field
+    document.getElementById('decision-type').addEventListener('change', (e) => {
+      document.getElementById('custom-question').style.display =
+        e.target.value === 'custom' ? 'block' : 'none';
+    });
+
+    async function drawCards() {
+      // Check daily limit for free users
+      if (!isPremium) {
+        const dailyCount = getDailyDrawCount();
+        if (dailyCount >= 1) {
+          showPaywall();
+          return;
+        }
+      }
+
+      const decisionType = document.getElementById('decision-type').value;
+      const customText = document.getElementById('custom-text').value;
+      const name = document.getElementById('name').value;
+      const errorEl = document.getElementById('error-msg');
+      const loadingEl = document.getElementById('loading');
+      const questionForm = document.getElementById('question-form');
+
+      if (!decisionType) {
+        errorEl.textContent = 'Please select a decision category';
+        errorEl.classList.add('active');
+        return;
+      }
+
+      if (decisionType === 'custom' && !customText.trim()) {
+        errorEl.textContent = 'Please enter your question';
+        errorEl.classList.add('active');
+        return;
+      }
+
+      errorEl.classList.remove('active');
+      questionForm.style.display = 'none';
+      loadingEl.classList.add('active');
+
+      try {
+        // Draw cards based on spread
+        const numCards = currentSpread;
+        const data = await fetchWithRetry(`${API_BASE}/cards/random?n=${numCards}`);
+
+        if (!data || !data.cards || data.cards.length < numCards) {
+          throw new Error('Failed to draw cards');
+        }
+
+        const cards = data.cards.slice(0, numCards);
+
+        // Build question context
+        const question = decisionType === 'custom'
+          ? customText
+          : `Should I move forward with this ${decisionType} decision?`;
+
+        // Determine upright/reversed (API doesn't provide, so we randomize)
+        // Higher reversal chance for Celtic Cross (more nuanced reading)
+        const reversalChance = currentSpread === 7 ? 0.35 : 0.25;
+        const cardsWithOrientation = cards.map(card => ({
+          ...card,
+          orientation: Math.random() < reversalChance ? 'reversed' : 'upright'
+        }));
+
+        // Generate reading via AI endpoint, fallback to template
+        const spread_name = SPREADS[cardsWithOrientation.length].name;
+        const reading = await callAiReading(cardsWithOrientation, question, name || 'seeker', spread_name);
+
+        // Increment daily draw count for free users
+        if (!isPremium) {
+          incrementDailyDraw();
+        }
+
+        // Display results
+        displayReading(cardsWithOrientation, question, name, reading);
+
+      } catch (err) {
+        errorEl.textContent = `Error: ${err.message}`;
+        errorEl.classList.add('active');
+        questionForm.style.display = 'block';
+      } finally {
+        loadingEl.classList.remove('active');
+      }
+    }
+
+    function getReading(cards, question, name) {
+      const positions = SPREADS[cards.length].positions;
+
+      let reading = `<div style="margin-bottom: 20px;">`;
+      reading += `<strong>${name ? name + ', ' : 'Seeker, '}</strong>your ${SPREADS[cards.length].name} on: <em>"${question}"</em>`;
+      reading += `</div>`;
+
+      // Card interpretations
+      cards.forEach((card, i) => {
+        const pos = positions[i];
+        const cardName = card.name || card.name_short.replace(/_/g, ' ');
+        const isReversed = card.orientation === 'reversed';
+        const meaning = isReversed ? card.meaning_rev : card.meaning_up;
+
+        reading += `<div class="card-interpretation">`;
+        reading += `<div style="color: #d4af37; font-size: 1.05em; margin-bottom: 4px;"><strong>${pos.name}:</strong> ${cardName}`;
+        if (isReversed) reading += ` <span style="font-size: 0.8em;">(Reversed)</span>`;
+        reading += `</div>`;
+        reading += `<div style="font-size: 0.85em; opacity: 0.7; margin-bottom: 8px;">${pos.guide}</div>`;
+        reading += `<div>${meaning}</div>`;
+
+        // Position-specific guidance for reversals
+        if (isReversed && currentSpread !== 1) {
+          reading += `<div style="margin-top: 8px; font-style: italic; opacity: 0.85;">`;
+          if (i === 0) {
+            reading += `This reversal suggests blocked energy or resistance in your current situation.`;
+          } else if (i === cards.length - 1) {
+            reading += `The outcome is not fixed-consider adjusting your approach.`;
+          } else {
+            reading += `Consider what needs to be released or reexamined here.`;
+          }
+          reading += `</div>`;
+        }
+
+        reading += `</div>`;
+      });
+
+      // Synthesis
+      const reversedCount = cards.filter(c => c.orientation === 'reversed').length;
+      const majorCount = cards.filter(c => c.type === 'major').length;
+
+      reading += `<div class="synthesis">`;
+      reading += `<div style="color: #d4af37; font-size: 1.1em; margin-bottom: 10px;">Reading Summary</div>`;
+
+      // Energy assessment
+      if (reversedCount === 0) {
+        reading += `<p><strong>Energy flows smoothly.</strong> All upright cards suggest clarity and forward momentum.</p>`;
+      } else if (reversedCount === 1) {
+        reading += `<p><strong>A pause point.</strong> One reversed card suggests something to reconsider.</p>`;
+      } else if (reversedCount === 2) {
+        reading += `<p><strong>Internal tension.</strong> Two reversed cards indicate conflicting energies to resolve.</p>`;
+      } else {
+        reading += `<p><strong>Time for reflection.</strong> Multiple reversals invite you to pause before acting.</p>`;
+      }
+
+      // Major arcana insight
+      if (majorCount >= Math.ceil(cards.length / 2)) {
+        reading += `<p><strong>Significant moment.</strong> Major Arcana cards speak of life themes and soul lessons.</p>`;
+      } else {
+        reading += `<p><strong>Practical guidance.</strong> Minor Arcana guide day-to-day choices and actions.</p>`;
+      }
+
+      reading += `<p style="margin-top: 10px;"><strong>Remember:</strong> Tarot illuminates your present-it does not predict your future. Trust your intuition.</p>`;
+      reading += `</div>`;
+
+      return reading;
+    }
+
+    // ========== AI READING ENDPOINT ==========
+    async function callAiReading(cards, question, name, spread_name) {
+      try {
+        const response = await fetch('/api/reading', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cards, question, name, spread_name })
+        });
+
+        if (!response.ok) {
+          throw new Error(`AI endpoint returned ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // If AI returned structured data, build HTML from it
+        if (data.readings && data.readings.length > 0) {
+          let html = `<div style="margin-bottom: 20px;">`;
+          html += `<strong>${name ? name + ', ' : 'Seeker, '}</strong>your ${spread_name} on: <em>"${question}"</em>`;
+          html += `</div>`;
+
+          data.readings.forEach(r => {
+            html += `<div class="card-interpretation">${r.text}</div>`;
+          });
+
+          if (data.synthesis) {
+            html += `<div class="synthesis">`;
+            html += `<div style="color: #d4af37; font-size: 1.1em; margin-bottom: 10px;">Reading Summary</div>`;
+            html += `<p>${data.synthesis}</p>`;
+            html += `<p style="margin-top: 10px;"><strong>Remember:</strong> Tarot illuminates your present — it does not predict your future. Trust your intuition.</p>`;
+            html += `</div>`;
+          }
+
+          // Mark if AI-generated
+          if (data.ai_generated) {
+            html += `<div style="margin-top: 12px; text-align: center; font-size: 0.8em; opacity: 0.5;">✨ AI-powered reading</div>`;
+          }
+
+          return html;
+        }
+
+        // Fallback to template if API returned no readings
+        throw new Error('No readings in response');
+      } catch (err) {
+        console.warn('AI reading failed, using template fallback:', err.message);
+        return getReading(cards, question, name);
+      }
+    }
+
+    function displayReading(cards, question, name, reading) {
+      const spread = SPREADS[cards.length];
+      const positions = spread.positions;
+
+      // Play flip sound when cards reveal
+      flipSound.play().catch(() => {});
+
+      // Update title
+      document.getElementById('reading-title').style.color = '#d4af37';
+      document.getElementById('reading-title').textContent = `Your ${spread.name}`;
+
+      const intro = name
+        ? `${name}'s reading about: "${question}"`
+        : `Reading about: "${question}"`;
+
+      document.getElementById('reading-header').textContent = intro;
+
+      // Build cards container
+      const container = document.getElementById('cards-container');
+      container.className = `cards-container spread-${cards.length}`;
+      container.innerHTML = '';
+
+      // For 7-card spread, use row layout (3-3-1)
+      if (cards.length === 7) {
+        // First row: 3 cards
+        const row1 = document.createElement('div');
+        row1.className = 'spread-7-row three-cards';
+        for (let i = 0; i < 3; i++) {
+          const slot = createCardSlot(cards[i], positions[i], i + 1);
+          row1.appendChild(slot);
+        }
+        container.appendChild(row1);
+
+        // Second row: 3 cards
+        const row2 = document.createElement('div');
+        row2.className = 'spread-7-row three-cards';
+        for (let i = 3; i < 6; i++) {
+          const slot = createCardSlot(cards[i], positions[i], i + 1);
+          row2.appendChild(slot);
+        }
+        container.appendChild(row2);
+
+        // Third row: 1 card (centered)
+        const row3 = document.createElement('div');
+        row3.className = 'spread-7-row single-card';
+        const slot = createCardSlot(cards[6], positions[6], 7);
+        row3.appendChild(slot);
+        container.appendChild(row3);
+      } else {
+        // Other spreads: standard layout
+        cards.forEach((card, i) => {
+          const slot = createCardSlot(card, positions[i], i + 1);
+          container.appendChild(slot);
+        });
+      }
+
+      document.getElementById('ai-reading').innerHTML = reading;
+      document.getElementById('reading-area').classList.add('active');
+
+      // Animate card reveals
+      animateCards(cards, container);
+
+      // Save to history
+      saveReading(question, cards, spread, reading);
+    }
+
+    function createCardSlot(card, position, cardNum) {
+      const displayName = card.name || card.name_short.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+      const slot = document.createElement('div');
+      slot.className = 'card-slot';
+      slot.innerHTML = `
+        <div class="position">${position.name}</div>
+        <div class="card-back" id="card${cardNum}-back">
+          <div class="card-back-symbol">◆</div>
+          <div class="card-back-text">Decision Tarot</div>
+        </div>
+        <img class="card-image" id="card${cardNum}-image" src="" alt="" style="display:none;">
+        <div class="card-name" id="card${cardNum}-name"></div>
+        <div class="orientation" id="card${cardNum}-orientation"></div>
+      `;
+      slot.querySelector('.card-name').textContent = displayName;
+      slot.querySelector('.orientation').textContent = card.orientation === 'reversed' ? 'Reversed' : 'Upright';
+      return slot;
+    }
+
+    function animateCards(cards, container) {
+      const allSlots = container.querySelectorAll('.card-slot');
+      cards.forEach((card, i) => {
+        const cardNum = i + 1;
+        const slot = allSlots[i];
+        const imageEl = slot.querySelector(`#card${cardNum}-image`);
+        const backEl = slot.querySelector(`#card${cardNum}-back`);
+        const displayName = card.name || card.name_short.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+        setTimeout(() => {
+          const imageFilename = getImageFilename(card);
+          if (imageFilename) {
+            const preloadImg = new Image();
+            preloadImg.onload = () => {
+              backEl.style.display = 'none';
+              imageEl.src = `cards/${imageFilename}`;
+              imageEl.alt = displayName;
+              imageEl.style.display = 'block';
+              imageEl.classList.add('revealed');
+            };
+            preloadImg.onerror = () => {
+              backEl.style.display = 'none';
+              imageEl.style.display = 'block';
+              imageEl.classList.add('revealed');
+            };
+            preloadImg.src = `cards/${imageFilename}`;
+          }
+        }, 600 * (cardNum + 1)); // Stagger reveals
+      });
+    }
+
+    function resetReading() {
+      document.getElementById('reading-area').classList.remove('active');
+      document.getElementById('question-form').style.display = 'block';
+      document.getElementById('decision-type').value = '';
+      document.getElementById('custom-text').value = '';
+      document.getElementById('name').value = '';
+    }
+
+    // ========== TAB NAVIGATION ==========
+    function switchTab(tabName) {
+      // Update tab buttons
+      document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.classList.remove('active');
+        if (tab.textContent.toLowerCase().includes(tabName)) {
+          tab.classList.add('active');
+        }
+      });
+
+      // Update tab content
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      document.getElementById(`tab-${tabName}`).classList.add('active');
+
+      // Load content for specific tabs
+      if (tabName === 'daily') loadDailyCard();
+      if (tabName === 'encyclopedia') loadEncyclopedia();
+      if (tabName === 'history') loadHistory();
+      if (tabName === 'dashboard') loadDashboard();
+    }
+
+    // ========== DAILY CARD ==========
+    let dailyCardData = null;
+
+    async function loadDailyCard() {
+      const container = document.getElementById('daily-card-container');
+
+      // Check if we have a cached daily card for today
+      const today = new Date().toDateString();
+      const cachedDaily = localStorage.getItem('dailyCard');
+
+      // Check daily limit for free users (same as draw limit)
+      if (!isPremium && getDailyDrawCount() >= 1) {
+        showPaywall();
+        container.innerHTML = `
+          <div class="history-empty">
+            <div class="history-empty-icon">🔮</div>
+            <p>Daily card limit reached. Upgrade to unlimited.</p>
+            <button class="paywall-btn" onclick="showPaywall()" style="margin-top:15px;padding:12px 24px;background:linear-gradient(135deg, #ffd700, #ffb700);border:none;border-radius:10px;color:#1a1a2e;font-weight:700;cursor:pointer;">Unlock Unlimited</button>
+          </div>
+        `;
+        return;
+      }
+
+      if (cachedDaily) {
+        const parsed = JSON.parse(cachedDaily);
+        if (parsed.date === today) {
+          dailyCardData = parsed.card;
+          displayDailyCard(dailyCardData);
+          return;
+        }
+      }
+
+      // Fetch new daily card
+      try {
+        const data = await fetchWithRetry(`${API_BASE}/cards/random?n=1`);
+        const card = data.cards[0];
+
+        dailyCardData = {
+          ...card,
+          orientation: Math.random() < 0.25 ? 'reversed' : 'upright'
+        };
+
+        // Cache for today
+        localStorage.setItem('dailyCard', JSON.stringify({
+          date: today,
+          card: dailyCardData
+        }));
+
+        // Increment daily draw for free users
+        if (!isPremium) {
+          incrementDailyDraw();
+        }
+
+        displayDailyCard(dailyCardData);
+      } catch (err) {
+        container.innerHTML = `
+          <div class="history-empty">
+            <div class="history-empty-icon">🔮</div>
+            <p>Unable to draw daily card. Please check your connection.</p>
+          </div>
+        `;
+      }
+    }
+
+    function displayDailyCard(card) {
+      const container = document.getElementById('daily-card-container');
+      const imageFilename = getImageFilename(card);
+      const isReversed = card.orientation === 'reversed';
+      const meaning = isReversed ? card.meaning_rev : card.meaning_up;
+      const cardName = card.name || card.name_short.replace(/_/g, ' ');
+
+      container.innerHTML = `
+        <div class="daily-card-display">
+          <img class="daily-card-image" src="cards/${imageFilename}" alt="${cardName}" style="${isReversed ? 'transform: rotate(180deg);' : ''}">
+          <div class="daily-card-name">${cardName}${isReversed ? ' (Reversed)' : ''}</div>
+          <div class="daily-card-meaning">${meaning}</div>
+          <div class="daily-timestamp">Drawn today, ${new Date().toLocaleDateString()}</div>
+        </div>
+        <button onclick="drawNewDailyCard()" style="margin-top: 15px; padding: 10px 20px; background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%); color: #eee; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; cursor: pointer; font-family: 'Quicksand', sans-serif;">
+          Draw New Card Tomorrow
+        </button>
+      `;
+    }
+
+    function drawNewDailyCard() {
+      localStorage.removeItem('dailyCard');
+      loadDailyCard();
+    }
+
+    // ========== ENCYCLOPEDIA ==========
+    let allCards = [];
+
+    async function loadEncyclopedia() {
+      const grid = document.getElementById('encyclopedia-grid');
+
+      if (allCards.length === 0) {
+        try {
+          const data = await fetchWithRetry(`${API_BASE}/cards`);
+          allCards = data.cards || data;
+        } catch (err) {
+          grid.innerHTML = '<p style="opacity:0.7;text-align:center;">Unable to load cards. Please check your connection.</p>';
+          return;
+        }
+      }
+
+      displayEncyclopediaCards(allCards);
+    }
+
+    function displayEncyclopediaCards(cards) {
+      const grid = document.getElementById('encyclopedia-grid');
+
+      grid.innerHTML = cards.map((card, index) => {
+        const name = card.name || card.name_short.replace(/_/g, ' ');
+        const imageFilename = getImageFilename(card);
+        return `
+          <div class="encyclopedia-card" data-card-index="${index}" onclick="showCardByIndex(${index})">
+            <img src="cards/${imageFilename}" alt="${name}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 60 100%22><rect fill=%22%231a1a3e%22 width=%22100%%22 height=%22100%%22/><text x=%2230%22 y=%2255%22 text-anchor=%22middle%22 fill=%22%23d4af37%22 font-size=%2212%22>${name.substring(0,8)}</text></svg>'">
+            <div class="card-title">${name.length > 15 ? name.substring(0, 12) + '...' : name}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function showCardByIndex(index) {
+      const card = allCards[index];
+      if (card) {
+        showCardDetail(card);
+      }
+    }
+
+    function filterEncyclopedia() {
+      const search = document.getElementById('encyclopedia-search').value.toLowerCase();
+      const filtered = allCards.filter(card => {
+        const name = (card.name || card.name_short).toLowerCase();
+        const meaning = (card.meaning_up || '').toLowerCase();
+        return name.includes(search) || meaning.includes(search);
+      });
+      displayEncyclopediaCards(filtered);
+    }
+
+    function showCardDetail(card) {
+      const modal = document.getElementById('card-modal');
+      const imageFilename = getImageFilename(card);
+      const name = card.name || card.name_short.replace(/_/g, ' ');
+
+      document.getElementById('modal-image').src = `cards/${imageFilename}`;
+      document.getElementById('modal-name').textContent = name;
+      document.getElementById('modal-upright').textContent = card.meaning_up || 'Upright meaning not available.';
+      document.getElementById('modal-reversed').textContent = card.meaning_rev || 'Reversed meaning not available.';
+
+      // Keywords - use desc excerpt if no keywords field
+      const keywords = card.keywords ? card.keywords.join(', ') : extractKeywords(card.desc || card.meaning_up);
+      document.getElementById('modal-keywords').textContent = keywords;
+
+      modal.classList.add('active');
+    }
+
+    function extractKeywords(text) {
+      if (!text) return 'No keywords available.';
+      // Extract first few significant words
+      const words = text.split(/[,.;]/)[0].split(' ').filter(w => w.length > 3).slice(0, 5);
+      return words.length > 0 ? words.join(', ') : 'No keywords available.';
+    }
+
+    function closeModal(event) {
+      // Close on overlay click or button click
+      if (!event || event.target.classList.contains('modal-overlay') || event.target.classList.contains('modal-close')) {
+        document.getElementById('card-modal').classList.remove('active');
+      }
+    }
+
+    function closeOutcomeModal(event) {
+      if (!event || event.target.classList.contains('modal-overlay') || event.target.classList.contains('modal-close')) {
+        document.getElementById('outcome-modal').classList.remove('active');
+      }
+    }
+
+    // ========== HISTORY WITH OUTCOME TRACKING ==========
+    function loadHistory() {
+      const container = document.getElementById('history-list');
+      const history = JSON.parse(localStorage.getItem('readingHistory') || '[]');
+
+      if (history.length === 0) {
+        container.innerHTML = `
+          <div class="history-empty">
+            <div class="history-empty-icon">📖</div>
+            <p>No readings yet. Your reading history will appear here.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = history.map((reading, index) => {
+        const outcome = reading.outcome;
+        let outcomeIndicator = '';
+        if (outcome === 'good') {
+          outcomeIndicator = '<span style="color:#4caf50;margin-left:8px;" title="Good outcome">👍</span>';
+        } else if (outcome === 'neutral') {
+          outcomeIndicator = '<span style="color:#ff9800;margin-left:8px;" title="Neutral outcome">➖</span>';
+        } else if (outcome === 'bad') {
+          outcomeIndicator = '<span style="color:#f44336;margin-left:8px;" title="Bad outcome">👎</span>';
+        }
+
+        return `
+          <div class="history-item">
+            <div style="display:flex;align-items:center;justify-content:space-between;" onclick='showHistoryReading(${index})'>
+              <div style="flex:1;">
+                <div class="history-date">${new Date(reading.timestamp).toLocaleDateString()} · ${reading.spread}${outcomeIndicator}</div>
+                <div class="history-question">${reading.question}</div>
+                <div class="history-cards">${reading.cards.map(c => c.name + (c.orientation === 'reversed' ? ' ↺' : '')).join(' → ')}</div>
+              </div>
+            </div>
+            <div style="margin-top:8px;display:flex;gap:8px;">
+              <button onclick="event.stopPropagation();showOutcomeForm(${index})" style="padding:6px 14px;font-size:0.8rem;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#eee;cursor:pointer;font-family:'Quicksand',sans-serif;">
+                ${reading.outcome ? 'Update Outcome' : 'Track Outcome'}
+              </button>
+              <button onclick="event.stopPropagation();showHistoryReading(${index})" style="padding:6px 14px;font-size:0.8rem;background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.3);border-radius:8px;color:#d4af37;cursor:pointer;font-family:'Quicksand',sans-serif;">
+                View Reading
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function showOutcomeForm(index) {
+      if (!isPremium) {
+        showTrackingPaywall();
+        return;
+      }
+
+      const history = JSON.parse(localStorage.getItem('readingHistory') || '[]');
+      const reading = history[index];
+      if (!reading) return;
+
+      const modal = document.getElementById('outcome-modal');
+      const currentOutcome = reading.outcome || '';
+
+      document.getElementById('outcome-modal-index').value = index;
+      document.getElementById('outcome-modal-date').textContent = new Date(reading.timestamp).toLocaleDateString();
+      document.getElementById('outcome-modal-question').textContent = reading.question;
+
+      // Highlight current selection
+      document.querySelectorAll('.outcome-btn').forEach(btn => {
+        btn.classList.remove('selected');
+        if (btn.dataset.outcome === currentOutcome) {
+          btn.classList.add('selected');
+        }
+      });
+
+      document.getElementById('outcome-notes').value = reading.outcomeNotes || '';
+      modal.classList.add('active');
+    }
+
+    function selectOutcome(value) {
+      document.querySelectorAll('.outcome-btn').forEach(btn => {
+        btn.classList.remove('selected');
+        if (btn.dataset.outcome === value) {
+          btn.classList.add('selected');
+        }
+      });
+    }
+
+    function saveOutcome() {
+      const index = parseInt(document.getElementById('outcome-modal-index').value);
+      const history = JSON.parse(localStorage.getItem('readingHistory') || '[]');
+      const reading = history[index];
+      if (!reading) return;
+
+      const selectedBtn = document.querySelector('.outcome-btn.selected');
+      if (!selectedBtn) {
+        alert('Please select an outcome (good, neutral, or bad).');
+        return;
+      }
+
+      reading.outcome = selectedBtn.dataset.outcome;
+      reading.outcomeNotes = document.getElementById('outcome-notes').value;
+      reading.outcomeDate = new Date().toISOString();
+
+      history[index] = reading;
+      localStorage.setItem('readingHistory', JSON.stringify(history));
+
+      document.getElementById('outcome-modal').classList.remove('active');
+      loadHistory();
+      updateDashboardStats();
+    }
+
+    function showTrackingPaywall() {
+      showPaywall('tracking');
+    }
+
+    function showHistoryReading(index) {
+      const history = JSON.parse(localStorage.getItem('readingHistory') || '[]');
+      const reading = history[index];
+
+      if (!reading) return;
+
+      // Build a display similar to the reading area
+      const container = document.getElementById('cards-container');
+      container.className = `cards-container spread-${reading.cards.length}`;
+      container.innerHTML = '';
+
+      reading.cards.forEach((card, i) => {
+        const positions = SPREADS[reading.cards.length].positions;
+        const imageFilename = getImageFilename(card);
+        const isReversed = card.orientation === 'reversed';
+
+        const slot = document.createElement('div');
+        slot.className = 'card-slot';
+        slot.innerHTML = `
+          <div class="position">${positions[i].name}</div>
+          <img class="card-image" src="cards/${imageFilename}" alt="${card.name}" style="${isReversed ? 'transform: rotate(180deg);' : ''}">
+          <div class="card-name">${card.name}</div>
+          <div class="orientation">${isReversed ? 'Reversed' : 'Upright'}</div>
+        `;
+        container.appendChild(slot);
+      });
+
+      document.getElementById('ai-reading').innerHTML = reading.interpretation;
+      document.getElementById('reading-title').textContent = `Past Reading: ${reading.spread}`;
+
+      // Switch to reading tab
+      switchTab('reading');
+      document.getElementById('question-form').style.display = 'none';
+      document.getElementById('reading-area').classList.add('active');
+    }
+
+    function saveReading(question, cards, spread, interpretation) {
+      const history = JSON.parse(localStorage.getItem('readingHistory') || '[]');
+
+      history.unshift({
+        timestamp: new Date().toISOString(),
+        question: question,
+        cards: cards,
+        spread: spread.name,
+        interpretation: interpretation,
+        outcome: null,
+        outcomeNotes: '',
+        outcomeDate: null,
+        tags: []
+      });
+
+      // Keep last 50 readings
+      if (history.length > 50) history.pop();
+
+      localStorage.setItem('readingHistory', JSON.stringify(history));
+    }
+
+    function clearHistory() {
+      if (confirm('Are you sure you want to clear your reading history?')) {
+        localStorage.removeItem('readingHistory');
+        loadHistory();
+        updateDashboardStats();
+      }
+    }
+
+    // ========== DECISION DASHBOARD ==========
+    function loadDashboard() {
+      const statsContainer = document.getElementById('dashboard-stats');
+      const chartContainer = document.getElementById('dashboard-chart');
+      const history = JSON.parse(localStorage.getItem('readingHistory') || '[]');
+      const tracked = history.filter(r => r.outcome !== null);
+      const totalTracked = tracked.length;
+
+      if (totalTracked === 0) {
+        statsContainer.innerHTML = `
+          <div class="history-empty">
+            <div class="history-empty-icon">📊</div>
+            <p>No outcomes tracked yet.</p>
+            <p style="font-size:0.85rem;opacity:0.7;margin-top:8px;">After you get a reading, track how the decision turned out in the History tab.</p>
+          </div>
+        `;
+        chartContainer.innerHTML = '';
+        return;
+      }
+
+      const good = tracked.filter(r => r.outcome === 'good').length;
+      const neutral = tracked.filter(r => r.outcome === 'neutral').length;
+      const bad = tracked.filter(r => r.outcome === 'bad').length;
+      const goodPct = Math.round((good / totalTracked) * 100);
+      const neutralPct = Math.round((neutral / totalTracked) * 100);
+      const badPct = Math.round((bad / totalTracked) * 100);
+
+      statsContainer.innerHTML = `
+        <div style="margin-bottom:20px;">
+          <div style="font-size:1.3rem;font-weight:600;margin-bottom:4px;">${totalTracked} Decision${totalTracked !== 1 ? 's' : ''} Tracked</div>
+          <div style="display:flex;gap:16px;margin-top:12px;flex-wrap:wrap;">
+            <div style="flex:1;min-width:100px;padding:12px;background:rgba(76,175,80,0.1);border-radius:10px;border:1px solid rgba(76,175,80,0.2);text-align:center;">
+              <div style="font-size:1.5rem;font-weight:700;color:#4caf50;">${good}</div>
+              <div style="font-size:0.8rem;opacity:0.8;">Good</div>
+            </div>
+            <div style="flex:1;min-width:100px;padding:12px;background:rgba(255,152,0,0.1);border-radius:10px;border:1px solid rgba(255,152,0,0.2);text-align:center;">
+              <div style="font-size:1.5rem;font-weight:700;color:#ff9800;">${neutral}</div>
+              <div style="font-size:0.8rem;opacity:0.8;">Neutral</div>
+            </div>
+            <div style="flex:1;min-width:100px;padding:12px;background:rgba(244,67,54,0.1);border-radius:10px;border:1px solid rgba(244,67,54,0.2);text-align:center;">
+              <div style="font-size:1.5rem;font-weight:700;color:#f44336;">${bad}</div>
+              <div style="font-size:0.8rem;opacity:0.8;">Bad</div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Bar chart
+      const barMax = Math.max(good, neutral, bad, 1);
+      chartContainer.innerHTML = `
+        <div style="margin-top:20px;">
+          <div style="color:#d4af37;font-size:1em;margin-bottom:12px;">Your Decisions Over Time</div>
+          <div style="display:flex;align-items:flex-end;gap:12px;height:160px;padding:10px 0;">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end;">
+              <div style="font-size:0.75rem;font-weight:600;color:#4caf50;margin-bottom:4px;">${goodPct}%</div>
+              <div style="width:100%;max-width:80px;background:linear-gradient(to top,#4caf50,#66bb6a);border-radius:6px 6px 0 0;transition:height 0.5s;height:${(good / barMax) * 120}px;min-height:${good > 0 ? '20' : '4'}px;"></div>
+              <div style="font-size:0.75rem;margin-top:4px;opacity:0.7;">Good</div>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end;">
+              <div style="font-size:0.75rem;font-weight:600;color:#ff9800;margin-bottom:4px;">${neutralPct}%</div>
+              <div style="width:100%;max-width:80px;background:linear-gradient(to top,#ff9800,#ffb74d);border-radius:6px 6px 0 0;transition:height 0.5s;height:${(neutral / barMax) * 120}px;min-height:${neutral > 0 ? '20' : '4'}px;"></div>
+              <div style="font-size:0.75rem;margin-top:4px;opacity:0.7;">Neutral</div>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end;">
+              <div style="font-size:0.75rem;font-weight:600;color:#f44336;margin-bottom:4px;">${badPct}%</div>
+              <div style="width:100%;max-width:80px;background:linear-gradient(to top,#f44336,#ef5350);border-radius:6px 6px 0 0;transition:height 0.5s;height:${(bad / barMax) * 120}px;min-height:${bad > 0 ? '20' : '4'}px;"></div>
+              <div style="font-size:0.75rem;margin-top:4px;opacity:0.7;">Bad</div>
+            </div>
+          </div>
+          <div style="margin-top:16px;font-size:0.85rem;opacity:0.7;text-align:center;">
+            Track more decisions to see patterns emerge
+          </div>
+        </div>
+      `;
+
+      // Lock premium badge
+      if (!isPremium) {
+        chartContainer.innerHTML += `
+          <div style="margin-top:20px;padding:16px;background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.2);border-radius:12px;text-align:center;">
+            <div style="font-size:1.1rem;color:#d4af37;margin-bottom:6px;">🔒 Premium Feature</div>
+            <p style="font-size:0.9rem;opacity:0.8;margin-bottom:12px;">Upgrade to track unlimited outcomes and unlock the full Decision Dashboard with trends and insights.</p>
+            <button class="paywall-btn" onclick="showPaywall()" style="padding:12px 24px;background:linear-gradient(135deg,#ffd700,#ffb700);border:none;border-radius:10px;color:#1a1a2e;font-weight:700;cursor:pointer;">Unlock Premium</button>
+          </div>
+        `;
+      }
+    }
+
+    function updateDashboardStats() {
+      // Refresh dashboard if it's the active tab
+      const dashboardTab = document.getElementById('tab-dashboard');
+      if (dashboardTab && dashboardTab.classList.contains('active')) {
+        loadDashboard();
+      }
+    }
+
+    // ========== INITIALIZATION ==========
+    // Load encyclopedia on page load for instant display when tab is clicked
+    async function initApp() {
+      try {
+        const data = await fetchWithRetry(`${API_BASE}/cards`);
+        allCards = data.cards || data;
+      } catch (err) {
+        console.error('Failed to preload cards:', err);
+      }
+    }
+
+    initApp();
+  </script>
+</body>
+</html>
